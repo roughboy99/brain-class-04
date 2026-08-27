@@ -1,0 +1,253 @@
+You are helping me install "The Brain That Runs a Company - Class 4: Ears and a Voice".
+
+I am a beginner. Work carefully, explain every step before you take it, and stop rather
+than guess. Do not skip ahead.
+
+Read this part before you do anything, because it changes what "done" means here:
+
+  Class 4 is built LIVE, in the class, from three prompts. This installer does NOT
+  build the bot for you. Its job is to get the pack onto my machine, prove that the
+  things Class 4 depends on are actually working, and set up the two environment
+  variables that have to exist before the hour starts. If you finish all of that and
+  I do not yet have a talking bot, that is the correct outcome. Say so plainly rather
+  than inventing more steps.
+
+## How I want you to talk to me
+
+Before every step, print exactly this shape:
+
+  Step N - <short name>
+  What I'm doing: one sentence, plain English
+  Why: one sentence
+  You should see: what a good result looks like
+
+After the step, tell me plainly whether it worked. If it did not, tell me what the error
+means in ordinary words before you tell me how to fix it. Never tell me a step passed
+unless you actually saw its output say so.
+
+## Step 1 - Work out what machine I am on
+
+Find out my operating system. If I am on Windows, also check whether WSL is installed
+(`wsl -l -v`) and whether Docker Desktop is running. Tell me what you found.
+
+Do not ask me questions you can answer by looking.
+
+## Step 2 - Make a workspace folder
+
+Mac or Linux: ~/class-04
+Windows: %USERPROFILE%\class-04
+
+Create it if it is not there. Tell me the full path you are using.
+
+## Step 3 - Download the pack
+
+Download this file into the workspace folder, keeping the name
+class-04-voice-pack-DRAFT.zip:
+
+https://roughboy99.github.io/brain-class-04/downloads/class-04-voice-pack-DRAFT.zip
+
+Mac / Linux / WSL:
+  curl -fL -o class-04-voice-pack-DRAFT.zip "<the URL above>"
+
+Windows PowerShell:
+  Invoke-WebRequest -Uri "<the URL above>" -OutFile class-04-voice-pack-DRAFT.zip
+
+The word DRAFT in that filename is deliberate and it is not a mistake. Explain to me
+what it means once you have read DRAFT.md in Step 6 - not before, because you do not
+know yet.
+
+If the download fails, stop and show me the exact error. Do not carry on with a
+zero-byte file.
+
+Download this second file into the same folder as well. It is the page you open
+whenever you need me to do something in a browser:
+
+https://roughboy99.github.io/brain-class-04/setup-gate.html
+
+If that one fails, say so and carry on anyway - it is a convenience, not a dependency.
+
+## Step 4 - Check I got the real file, not a broken or swapped one
+
+The file must have this SHA-256:
+
+  e7093e68c8aca2ee8e4e7012be0af3cfdb95ad9cd4cb353c8e7bedf32eb356b4
+
+Mac / Linux / WSL:   sha256sum class-04-voice-pack-DRAFT.zip
+Mac (if that is missing): shasum -a 256 class-04-voice-pack-DRAFT.zip
+Windows PowerShell:  Get-FileHash class-04-voice-pack-DRAFT.zip -Algorithm SHA256
+
+Compare it yourself and tell me match or no match.
+
+If it does not match: STOP. Do not unzip it. Tell me the file is not what it is supposed
+to be and that I should download it again.
+
+## Step 5 - Unzip it into its own folder
+
+This zip has no folder inside it - it unpacks flat, straight into wherever you are
+standing. Give it a destination on purpose, or it scatters README.md, prompts/ and
+docs/ loose into my workspace:
+
+Mac / Linux / WSL:
+  unzip -o class-04-voice-pack-DRAFT.zip -d class-04-voice-pack
+
+Windows PowerShell:
+  Expand-Archive -Path class-04-voice-pack-DRAFT.zip -DestinationPath class-04-voice-pack -Force
+
+Use -o (and -Force) so that re-running never sits there waiting for me to answer an
+"overwrite?" prompt I cannot see.
+
+Then list what came out. From here on, "the pack folder" means class-04-voice-pack/.
+
+## Step 6 - Read DRAFT.md first, then the README
+
+Read class-04-voice-pack/DRAFT.md before anything else, and tell me in your own words:
+
+  - which single file is missing from this pack
+  - why it is missing
+  - which five files refer to it anyway
+  - what I should do instead when I hit one of those references
+
+Do not gloss over this. If I follow a prompt to a line that says "import
+demo/09-voice-ask.json" and there is no demo folder, I will think the download is
+broken. I want to already know it is not.
+
+Then read README.md, PREWORK.md and VERIFY.md all the way through.
+
+## Step 7 - Check the things Class 4 stands on, before touching anything
+
+Class 4 does not build a brain. It plugs a phone into the one I built in Class 3. If
+that brain is not answering, nothing here can make it answer, and every symptom will
+point at the wrong class.
+
+Check these in order and print PASS or FAIL for each. Do not continue past a FAIL
+without telling me plainly what it means:
+
+1. Docker is running, and my n8n and Postgres containers are Up.
+     docker compose ps   (from wherever my stack lives - find it, do not assume)
+
+2. n8n answers on its port. The root address returning 404 is normal; use /healthz.
+
+3. My Class 3 /ask webhook ANSWERS a question about my own documents. Call it with
+   curl, the same way my dashboard's Ask tab calls it. Show me the answer and the
+   source it cites.
+
+4. My Class 3 /ask webhook REFUSES a question my documents do not cover. It should
+   come back with answered: false and an empty sources list, not an invented answer.
+
+   If it invents an answer, stop. That is a Class 3 fault and Class 4 will inherit it,
+   except it will now say the invented answer out loud.
+
+5. ffmpeg inside the n8n container has libopus. Telegram voice notes are ogg/opus and
+   without libopus the reply cannot be encoded:
+     docker compose exec n8n ffmpeg -encoders 2>/dev/null | grep opus
+
+   If ffmpeg is not in the container at all, say so - that is a different problem from
+   ffmpeg being there without libopus, and the fix is different.
+
+6. Both model slugs still exist on OpenRouter. A retired slug fails as a broken
+   workflow rather than a bad name:
+     google/gemini-2.5-flash
+     openai/gpt-audio-mini
+
+The pack ships verify.sh which does most of this. Run it rather than reimplementing it:
+
+  bash class-04-voice-pack/verify.sh
+
+Read its output to me. If it names something missing, that is the thing to fix, and it
+is more reliable than anything you would write here.
+
+## Step 8 - The pre-work, which only I can do
+
+Open setup-gate.html in my browser rather than reading a wall of text at me. Use the
+right command for my machine:
+
+  Linux            xdg-open setup-gate.html
+  Mac              open setup-gate.html
+  WSL (Windows)    explorer.exe "$(wslpath -w setup-gate.html)" || true
+  PowerShell       Start-Process setup-gate.html
+
+Two things about this that will bite you:
+
+  - explorer.exe returns a non-zero exit code even when it worked. Under
+    set -euo pipefail that kills a script on a step that actually succeeded. Append
+    `|| true` to it.
+  - If nothing opens - a headless box, a server over SSH, no browser - do not fail.
+    Print the full path and the steps in the terminal instead, and carry on.
+
+The gate covers, in this order, and the order matters:
+
+  1. Create a Telegram bot with @BotFather. Free, two minutes, no card.
+  2. Press Start and send it a message, from the phone I will use in class.
+  3. Get my numeric chat id from
+     https://api.telegram.org/bot<MY_TOKEN>/getUpdates
+
+Tell me why step 3 has to happen NOW, before any workflow exists. Then wait for me.
+
+Do not ask me to paste my bot token to you. You do not need it and it is a password.
+If I paste it anyway, tell me to send /revoke to @BotFather and get a new one.
+
+## Step 9 - The two environment variables, and the restart people forget
+
+This is the only part of Class 4 that is genuinely automatable, and it is the part that
+silently breaks the class when it is skipped.
+
+Add these two lines to my stack's .env, next to where my other keys already live:
+
+  BRAIN_BOT_TOKEN=<the token BotFather gave me>
+  BRAIN_OWNER_ID=<my numeric chat id>
+
+Rules for this:
+
+  - APPEND. Never rewrite or overwrite that .env. It holds the key that decrypts my
+    saved n8n credentials, and replacing it locks me out of every credential I have.
+  - Check first whether either line is already there. If it is, leave it and tell me.
+  - I type the token in myself. You add the line, I fill the value, or I paste it
+    into the file directly. Do not echo it back to me on screen afterwards.
+
+Then RESTART the n8n container:
+
+  docker compose restart n8n
+
+Explain why, because this is the trap: n8n reads environment variables when the
+container starts and never again. Adding the line without restarting gives an empty
+token, and Telegram answers an empty token with 404 Not Found - which reads like a
+broken URL and is nothing of the kind.
+
+Verify it actually landed, without printing the value:
+
+  docker compose exec n8n printenv BRAIN_BOT_TOKEN | wc -c
+
+A number bigger than 40 is right. 0 or 1 means it is empty and the restart did not
+take effect.
+
+## Step 10 - Know when we are actually finished
+
+We are finished when ALL of these are true. Print them back to me as a checklist with
+a real PASS or FAIL against each:
+
+  - The pack is downloaded, the checksum matched, and it is unzipped
+  - I know what DRAFT.md says and why demo/09-voice-ask.json is absent
+  - My Class 3 Ask answers a real question AND refuses one it cannot answer
+  - ffmpeg in the container has libopus
+  - Both model slugs still exist
+  - I have a Telegram bot, I have pressed Start, and I have my numeric chat id
+  - BRAIN_BOT_TOKEN and BRAIN_OWNER_ID are in .env and the container has been restarted
+  - printenv inside the container shows the token is non-empty
+
+Then tell me, in two or three sentences: what I now have, what I do NOT yet have, and
+that the bot itself gets built in the hour from prompts/P1-ears.md, P2-ask.md and
+P3-voice.md - in that order, each one ending somewhere I can see on my own phone.
+
+Do not offer to build the workflow for me now. It is built in the class, on camera,
+and building it early against my real bot registers a webhook that makes getUpdates
+return 409 on that bot forever.
+
+## Ground rules for the whole job
+
+- Never claim something worked without output showing it worked.
+- Never skip the checksum.
+- Never write my bot token or my OpenRouter key into any file you create, and never
+  print either one to the screen. The token belongs in .env and in an n8n credential,
+  and nowhere else.
+- If you get stuck on the same thing twice, stop. Give me the exact command and the
+  exact error, pasted, so I can post it in the community. Never post my token.

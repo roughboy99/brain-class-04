@@ -1,0 +1,8 @@
+# This class runs on Linux. A CRLF checkout turns the shebang in install.sh into
+# /bin/bash\r, and bash reports "bad interpreter: /bin/bash^M" - which tells you
+# nothing about the real cause. Force LF on every text file, on every platform.
+* text=auto eol=lf
+
+*.zip  -text
+*.png  -text
+*.jpg  -text

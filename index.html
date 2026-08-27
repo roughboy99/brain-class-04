@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Class 4 — Ears and a Voice | Show Notes</title>
+<meta name="description" content="Send a voice note from your phone. Your brain answers out loud, from your own documents. Follow-along notes for Class 4 of The Brain That Runs a Company, with the recap of Classes 1-3." />
+<style>
+  :root{
+    --charcoal:#0F172A;
+    --panel:#16223b;
+    --panel-2:#1b2946;
+    --border:#2a3a5c;
+    --blue:#2B6CB0;
+    --blue-2:#3B82F6;
+    --gold:#D4A843;
+    --green:#16A34A;
+    --red:#DC2626;
+    --text:#F8FAFC;
+    --body:#c3cfe0;
+    --muted:#94A3B8;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--charcoal);color:var(--text);font-family:var(--sans);line-height:1.7;-webkit-font-smoothing:antialiased}
+
+  /* ── hero ───────────────────────────── */
+  .hero{background:linear-gradient(140deg,#0b1120 0%,var(--panel-2) 100%);border-bottom:3px solid var(--blue);padding:52px 24px 40px;text-align:center}
+  .series{font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+  .hero h1{font-size:clamp(27px,5.2vw,44px);font-weight:800;line-height:1.15;max-width:760px;margin:0 auto 14px;letter-spacing:-.02em}
+  .hero h1 span{color:var(--blue-2)}
+  .hero-sub{font-size:16px;color:var(--muted);max-width:620px;margin:0 auto 26px}
+  .meta-row{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;max-width:820px;margin:0 auto}
+  .meta-item{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:999px;padding:7px 15px;font-size:13px;color:var(--muted);white-space:nowrap}
+  .meta-item strong{color:var(--text);font-weight:600}
+
+  /* ── layout ─────────────────────────── */
+  .content{max-width:820px;margin:0 auto;padding:44px 24px 72px}
+  .section{margin-bottom:46px;scroll-margin-top:20px}
+  h2{font-size:21px;font-weight:800;margin-bottom:8px;padding-bottom:10px;border-bottom:1px solid var(--border);letter-spacing:-.01em}
+  h3{font-size:15px;font-weight:700;margin:22px 0 8px;color:var(--text)}
+  p{color:var(--body);font-size:15.5px;margin-bottom:13px}
+  p strong,li strong,td strong{color:var(--text);font-weight:600}
+  a{color:var(--blue-2)}
+  .lead{font-size:17px;color:var(--text)}
+  ul,ol{color:var(--body);font-size:15.5px;margin:0 0 13px 22px}
+  li{margin-bottom:6px}
+  hr{border:0;border-top:1px solid var(--border);margin:34px 0}
+
+  /* ── nav ────────────────────────────── */
+  .toc{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:40px}
+  .toc-t{font-family:var(--mono);font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .toc ul{list-style:none;margin:0;display:flex;flex-wrap:wrap;gap:7px}
+  .toc li{margin:0}
+  .toc a{display:inline-block;background:var(--panel-2);border:1px solid var(--border);border-radius:999px;padding:5px 13px;font-size:13px;text-decoration:none;color:var(--body)}
+  .toc a:hover{border-color:var(--blue-2);color:var(--text)}
+
+  /* ── the definition ─────────────────── */
+  .definition{background:linear-gradient(135deg,rgba(43,108,176,.16),rgba(212,168,67,.08));border:1px solid var(--blue);border-left:4px solid var(--gold);border-radius:10px;padding:24px 26px;margin:20px 0}
+  .definition p{font-size:21px;font-weight:700;color:var(--text);margin:0;line-height:1.4}
+  .definition .after{font-size:14.5px;font-weight:400;color:var(--muted);margin-top:10px}
+
+  /* ── organ grid ─────────────────────── */
+  .organs{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:20px 0}
+  .organ{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 10px;text-align:center}
+  .organ.today{border-color:var(--gold);background:linear-gradient(180deg,rgba(212,168,67,.14),transparent)}
+  .organ.later{opacity:.5}
+  .organ-ico{font-size:23px;margin-bottom:6px}
+  .organ-name{font-weight:700;font-size:13.5px;margin-bottom:3px}
+  .organ-tool{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-bottom:7px}
+  .tag{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:4px;background:rgba(148,163,184,.15);color:var(--muted)}
+  .tag.now{background:var(--gold);color:#3a2c06;font-weight:700}
+  .tag.done{background:rgba(22,163,74,.22);color:#7ee2a8}
+
+  /* ── tables ─────────────────────────── */
+  .tw{overflow-x:auto;margin:16px 0;border:1px solid var(--border);border-radius:10px}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:480px}
+  th{background:var(--panel-2);text-align:left;padding:11px 14px;font-weight:700;font-size:12.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+  td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--body);vertical-align:top}
+  tr:last-child td{border-bottom:0}
+
+  /* ── steps ──────────────────────────── */
+  .step{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:16px}
+  .step.hero-step{border-color:var(--blue);background:linear-gradient(160deg,rgba(43,108,176,.14),var(--panel))}
+  .step-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .step-num{flex:none;min-width:30px;height:30px;padding:0 8px;border-radius:8px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;font-family:var(--mono)}
+  .step-num.gold{background:var(--gold);color:#3a2c06}
+  .step-num.green{background:var(--green)}
+  .step-title{font-size:18px;font-weight:700;letter-spacing:-.01em}
+  .step-time{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap}
+
+  /* ── code ───────────────────────────── */
+  .code{position:relative;background:#0a1020;border:1px solid var(--border);border-radius:8px;margin:10px 0 14px}
+  .code-label{font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:8px 14px 0}
+  pre{font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#dbe6f5;padding:10px 14px 14px;overflow-x:auto;white-space:pre}
+  pre.wrap{white-space:pre-wrap;word-break:break-all}
+  .cp{position:absolute;top:6px;right:6px;background:var(--panel-2);color:var(--muted);border:1px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:10.5px;padding:4px 9px;cursor:pointer}
+  .cp:hover{color:var(--text);border-color:var(--blue-2)}
+  .cp.ok{color:#7ee2a8;border-color:var(--green)}
+  code{font-family:var(--mono);font-size:.9em;background:rgba(148,163,184,.14);padding:1px 5px;border-radius:4px;color:#e4ecf8}
+
+  /* ── the one command ────────────────── */
+  .install{background:linear-gradient(150deg,rgba(43,108,176,.2),rgba(15,23,42,.4));border:1px solid var(--blue);border-radius:14px;padding:24px 26px;margin:22px 0}
+  .install h3{margin-top:0;font-size:16px}
+  .osbar{display:flex;gap:8px;margin:14px 0 4px;flex-wrap:wrap}
+  .osbar button{background:var(--panel);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:7px 17px;font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer}
+  .osbar button:hover{border-color:var(--blue-2);color:var(--text)}
+  .osbar button.on{background:var(--blue-2);border-color:var(--blue-2);color:#fff}
+  .osonly{display:none}
+  .osonly.show{display:block}
+
+  /* ── callouts ───────────────────────── */
+  .note{border-left:3px solid var(--blue-2);background:rgba(59,130,246,.08);border-radius:0 8px 8px 0;padding:14px 18px;margin:14px 0}
+  .warn{border-left:3px solid var(--gold);background:rgba(212,168,67,.09);border-radius:0 8px 8px 0;padding:14px 18px;margin:14px 0}
+  .danger{border-left:3px solid var(--red);background:rgba(220,38,38,.10);border-radius:0 8px 8px 0;padding:14px 18px;margin:14px 0}
+  .does{border-left:3px solid var(--green);background:rgba(22,163,74,.08);border-radius:0 8px 8px 0;padding:14px 18px;margin:14px 0}
+  .note p:last-child,.warn p:last-child,.danger p:last-child,.does p:last-child,
+  .note ul:last-child,.warn ul:last-child,.danger ul:last-child,.does ul:last-child{margin-bottom:0}
+  .note-t,.warn-t,.danger-t,.does-t{font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;font-family:var(--mono)}
+  .note-t{color:var(--blue-2)} .warn-t{color:var(--gold)}
+  .danger-t{color:#ff8080} .does-t{color:#6ee7a0}
+
+  /* ── recap cards ────────────────────── */
+  .recap{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--border);border-radius:0 12px 12px 0;padding:20px 24px;margin-bottom:14px}
+  .recap.c1{border-left-color:#7c6bd6} .recap.c2{border-left-color:#3b82f6} .recap.c3{border-left-color:#16a34a}
+  .recap h3{margin-top:0;font-size:17px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .recap h3 .n{font-family:var(--mono);font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .recap .got{font-family:var(--mono);font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#6ee7a0;font-weight:700;margin:14px 0 5px}
+
+  /* ── diagram ────────────────────────── */
+  .diagram{background:#0a1020;border:1px solid var(--border);border-radius:10px;padding:18px;margin:16px 0;overflow-x:auto}
+  .diagram pre{padding:0;font-size:12.5px;color:#9dc4ee}
+  .diagram .keep{color:#6ee7a0;font-weight:700}
+
+  /* ── checklist ──────────────────────── */
+  .check{list-style:none;margin:14px 0 0}
+  .check li{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);margin:0;color:var(--body)}
+  .check li:last-child{border-bottom:0}
+  .check input{margin-top:5px;width:16px;height:16px;accent-color:var(--green);flex:none;cursor:pointer}
+  .check label{cursor:pointer}
+
+  /* ── milestone ──────────────────────── */
+  .ms{background:linear-gradient(135deg,rgba(22,163,74,.14),transparent);border:1px solid var(--green);border-radius:10px;padding:14px 18px;margin:14px 0}
+  .ms-t{font-family:var(--mono);font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#8ce8ae;font-weight:700;margin-bottom:5px}
+  .ms p:last-child{margin-bottom:0}
+
+  /* ── homework ───────────────────────── */
+  .hw{background:linear-gradient(135deg,rgba(22,163,74,.13),transparent);border:1px solid var(--green);border-radius:12px;padding:22px 24px;margin:18px 0}
+  .hw h3{margin-top:0;color:#8ce8ae}
+
+  /* ── downloads ──────────────────────── */
+  a.big{display:block;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-top:11px;text-decoration:none;color:var(--text)}
+  a.big:hover{border-color:var(--blue-2)}
+  a.big .t{font-size:15.5px;font-weight:700}
+  a.big .d{color:var(--muted);font-size:13.5px;margin-top:3px}
+  a.big .go{float:right;color:var(--blue-2);font-weight:700;font-size:20px;line-height:1}
+
+  /* ── footer ─────────────────────────── */
+  .foot{border-top:1px solid var(--border);margin-top:50px;padding-top:24px;text-align:center;color:var(--muted);font-size:13.5px}
+  .sig{font-size:17px;color:var(--text);font-weight:700;margin-bottom:6px}
+
+  @media (max-width:820px){
+    .organs{grid-template-columns:repeat(3,1fr)}
+  }
+  @media (max-width:520px){
+    .organs{grid-template-columns:repeat(2,1fr)}
+    .step{padding:18px 16px}
+    .step-time{display:none}
+  }
+  @media print{
+    body{background:#fff;color:#000}
+    .hero{background:#fff;border-bottom:2px solid #000;padding:20px 0}
+    .toc,.osbar,.cp{display:none}
+    .osonly{display:block !important}
+    .step,.recap,.code,.install{break-inside:avoid}
+    p,li,td{color:#111}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="series">The Brain That Runs a Company · Part 4 of 7</div>
+  <h1>Ears and a <span>Voice</span></h1>
+  <p class="hero-sub">You send a voice note from your phone. It answers out loud, from your own documents.</p>
+  <div class="meta-row">
+    <div class="meta-item">📅 <strong>Wed, Sep 2, 2026</strong></div>
+    <div class="meta-item">🕚 <strong>11:00 AM ET</strong></div>
+    <div class="meta-item">⏱ 60 min</div>
+    <div class="meta-item">🎥 Skool live room</div>
+    <div class="meta-item">👥 AI Auto Base</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <nav class="toc">
+    <div class="toc-t">Follow along</div>
+    <ul>
+      <li><a href="#install">The one command</a></li>
+      <li><a href="#story">The series so far</a></li>
+      <li><a href="#recap">Classes 1–3</a></li>
+      <li><a href="#today">Where today sits</a></li>
+      <li><a href="#prework">Before the hour</a></li>
+      <li><a href="#p1">P1 · Ears</a></li>
+      <li><a href="#guard">The guard</a></li>
+      <li><a href="#p2">P2 · Ask</a></li>
+      <li><a href="#p3">P3 · Voice</a></li>
+      <li><a href="#refusal">The refusal</a></li>
+      <li><a href="#verify">Verify</a></li>
+      <li><a href="#cost">What it costs</a></li>
+      <li><a href="#next">Class 5</a></li>
+    </ul>
+  </nav>
+
+  <!-- ═══════════════════ INSTALL ═══════════════════ -->
+  <section class="section" id="install">
+    <h2>Start here — one command</h2>
+    <p class="lead">This downloads the pack, checks it is the real file, proves your Class 3 brain is answering, and sets up the two things that have to exist before we start. It does <strong>not</strong> build the bot — we do that together, live.</p>
+
+    <div class="install">
+      <h3>Paste this into your terminal</h3>
+      <p style="margin-bottom:0">Run it inside a folder you do not mind it writing to. It needs Claude Code, which you installed in Class 1.</p>
+
+      <div class="osbar" role="group" aria-label="Choose your operating system">
+        <button type="button" data-os="mac" class="on">macOS</button>
+        <button type="button" data-os="linux">Linux / WSL</button>
+        <button type="button" data-os="win">Windows</button>
+      </div>
+
+      <div class="osonly show" data-os="mac">
+        <div class="code">
+          <div class="code-label">macOS · Terminal</div>
+          <button class="cp" type="button">copy</button>
+<pre class="wrap">curl -fsSL -o install.txt https://roughboy99.github.io/brain-class-04/install.txt && claude "Read install.txt in this folder and follow it exactly, from the top."</pre>
+        </div>
+      </div>
+
+      <div class="osonly" data-os="linux">
+        <div class="code">
+          <div class="code-label">Linux / WSL · bash</div>
+          <button class="cp" type="button">copy</button>
+<pre class="wrap">curl -fsSL -o install.txt https://roughboy99.github.io/brain-class-04/install.txt && claude "Read install.txt in this folder and follow it exactly, from the top."</pre>
+        </div>
+      </div>
+
+      <div class="osonly" data-os="win">
+        <div class="code">
+          <div class="code-label">Windows · PowerShell</div>
+          <button class="cp" type="button">copy</button>
+<pre class="wrap">Invoke-WebRequest -Uri "https://roughboy99.github.io/brain-class-04/install.txt" -OutFile install.txt; claude "Read install.txt in this folder and follow it exactly, from the top."</pre>
+        </div>
+        <div class="note">
+          <div class="note-t">Windows note</div>
+          <p>Use PowerShell, not the old Command Prompt. If your stack runs inside WSL, run the Linux version <em>inside WSL</em> instead — the pack has to end up on the same side as your containers.</p>
+        </div>
+      </div>
+
+      <div class="note">
+        <div class="note-t">Why it downloads a file instead of pasting the prompt</div>
+        <p>The prompt is 10,566 characters. Windows caps a command line at 8,191, so pasting it inline works on Mac and Linux and silently truncates on Windows — which is exactly where the people who most need it are. Fetching it to a file works everywhere.</p>
+      </div>
+    </div>
+
+    <p>Rather read it before you run it? <a href="install.txt">Here is the whole prompt</a>. Do that with anything you get off the internet — including from me.</p>
+
+    <a class="big" href="downloads/class-04-voice-pack-DRAFT.zip"><span class="go">↓</span>
+      <div class="t">class-04-voice-pack-DRAFT.zip</div>
+      <div class="d">The pack, if you would rather download it by hand · 42,227 bytes</div>
+    </a>
+    <p style="font-size:13.5px;color:var(--muted);margin-top:9px">Check you got the real file:
+      <code>cd downloads &amp;&amp; sha256sum -c SHA256SUMS</code> — <a href="downloads/SHA256SUMS">SHA256SUMS</a></p>
+    <a class="big" href="setup-gate.html"><span class="go">→</span>
+      <div class="t">setup-gate.html</div>
+      <div class="d">The browser steps no script can do for you — BotFather, your chat id, the credential</div>
+    </a>
+    <a class="big" href="pack/"><span class="go">→</span>
+      <div class="t">Read the pack without downloading it</div>
+      <div class="d">Every file, unzipped, right here on GitHub</div>
+    </a>
+
+    <div class="warn">
+      <div class="warn-t">The word DRAFT in that filename is deliberate</div>
+      <p>One file is missing from the pack on purpose: <code>demo/09-voice-ask.json</code>, the finished workflow you would import if a build went sideways. It does not exist yet, because we build that workflow live today and no honest copy of it exists to ship. <strong>Five files in the pack refer to it anyway</strong> — <code>README.md</code>, all three prompts, and <code>BUILD-THE-BOT.md</code>. When you hit one of those lines, that is not a broken download.</p>
+      <p><code>BUILD-THE-BOT.md</code> walks the same workflow node by node and is complete. The export lands in an updated pack after class, on this same link.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ THE STORY ═══════════════════ -->
+  <section class="section" id="story">
+    <h2>What we have been building</h2>
+
+    <div class="definition">
+      <p>Business intelligence is the brain that runs a company.</p>
+      <div class="after">Not a report. Not a dashboard. A brain — and a brain perceives, remembers, reasons, and decides.</div>
+    </div>
+
+    <p>Most small companies have the first two and rent the last two from the owner's attention. The company only thinks when the owner is awake and looking at it. That is not a data problem. It is a missing organ, and this series builds the organ, one part per week.</p>
+
+    <div class="organs">
+      <div class="organ"><div class="organ-ico">🧠</div><div class="organ-name">Brain</div><div class="organ-tool">Claude Code</div><span class="tag done">Class 1</span></div>
+      <div class="organ"><div class="organ-ico">⚡</div><div class="organ-name">Senses</div><div class="organ-tool">n8n</div><span class="tag done">Class 2</span></div>
+      <div class="organ"><div class="organ-ico">💾</div><div class="organ-name">Memory</div><div class="organ-tool">Postgres</div><span class="tag done">Class 3</span></div>
+      <div class="organ"><div class="organ-ico">👁</div><div class="organ-name">Eyes</div><div class="organ-tool">Dashboard</div><span class="tag done">Class 3</span></div>
+      <div class="organ today"><div class="organ-ico">👂</div><div class="organ-name">Ears &amp; voice</div><div class="organ-tool">Telegram</div><span class="tag now">Today</span></div>
+      <div class="organ later"><div class="organ-ico">🤚</div><div class="organ-name">Hands</div><div class="organ-tool">Schedules</div><span class="tag">Class 5</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ RECAP ═══════════════════ -->
+  <section class="section" id="recap">
+    <h2>Classes 1 – 3, in one page</h2>
+    <p>If you are joining late, this is what the other three hours built. You need Class 3 working to follow today; Classes 1 and 2 are how you got there.</p>
+
+    <div class="recap c1">
+      <h3><span class="n">Class 1 · Aug 12</span> Install the Brain</h3>
+      <p>We installed the part that <strong>reasons</strong>: Node 24, Claude Code, the Codex CLI as a second opinion that fails differently, VS Code with the Claude extension, and twelve skills in one command.</p>
+      <p>The idea underneath it: a <strong>skill</strong> is a procedure written once that turns into behavior. You stop explaining how you want something done every time you want it done.</p>
+      <div class="got">What you left with</div>
+      <ul>
+        <li>An agent that can reason about a business, with no business plugged into it yet — deliberately</li>
+        <li>Two agents, so that when they disagree you slow down</li>
+        <li>The habit that matters most: <strong>read the script before you run it</strong></li>
+      </ul>
+      <p style="margin-top:12px;margin-bottom:0"><em>Optional, after class:</em> connecting Obsidian over MCP — and the part people skip, writing the <em>habit</em> into <code>CLAUDE.md</code> so the agent actually searches your notes before it searches the web.</p>
+    </div>
+
+    <div class="recap c2">
+      <h3><span class="n">Class 2 · Aug 19</span> Give It Senses</h3>
+      <p>n8n installed and talking to Postgres. The demo workflow had three parts, and Claude Code wrote all of them: <strong>a trigger</strong> that pulls from your inbox, <strong>a classifier</strong> that decides what kind of email it is, and <strong>a write</strong> that logs it to Postgres.</p>
+      <p>Something senses, something decides, something remembers. Every workflow in the rest of the series is a variation on those three.</p>
+      <div class="got">What you left with</div>
+      <ul>
+        <li>n8n on port <code>5678</code>, Postgres receiving rows</li>
+        <li>The dashboard <strong>unfinished</strong> — the class ran 2h25m and the payoff got squeezed out</li>
+      </ul>
+      <div class="warn" style="margin-bottom:0">
+        <div class="warn-t">Why the format changed after this one</div>
+        <p>A live build on a clock, on a bad connection, with an echo on the call. The fix was not preparing harder — <strong>the build moved to video and the hour became your questions.</strong> That is why today has prompts and short videos pinned before we start.</p>
+      </div>
+    </div>
+
+    <div class="recap c3">
+      <h3><span class="n">Class 3 · Aug 26</span> Ask Your Brain</h3>
+      <p>Memory it can search. Your documents chunked, embedded, and answerable — <strong>with sources</strong>.</p>
+      <p>The idea, stated plainly because almost everything written about this hides it behind a product: <strong>an embedding is an array of numbers, and similarity is multiplication.</strong> A model reads a chunk of your lease and gives back 1,536 numbers. Do the same with a question and the two lists point in roughly the same direction when they are about roughly the same thing. That is eight lines of SQL.</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th>Approach</th><th>5,000 chunks</th></tr></thead>
+          <tbody>
+            <tr><td>Cosine over the whole table</td><td>1,027 ms</td></tr>
+            <tr><td>Full-text only, GIN index</td><td>0.34 ms</td></tr>
+            <tr><td><strong>Full-text narrows to 200, cosine ranks those</strong></td><td><strong>45.8 ms</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Twenty-two times faster, and it stays flat as your corpus grows, because the expensive half never sees more than 200 rows. That is also what production retrieval actually does: keywords <em>plus</em> meaning, not meaning alone. No vector database required.</p>
+
+      <div class="got">What you left with</div>
+      <ul>
+        <li>A <code>kb</code> table holding your documents, searchable by meaning</li>
+        <li>An <code>/ask</code> webhook that answers questions and cites the document</li>
+        <li>A dashboard with an <strong>Ask</strong> tab — plus the addendum's drag-and-drop ingest and inbox sorting</li>
+      </ul>
+
+      <div class="does" style="margin-bottom:0">
+        <div class="does-t">The lesson today depends on</div>
+        <p><strong>The refusal is the feature.</strong> Ask it something your documents do not cover and it says <em>"I don't have that in your documents"</em> — it does not guess. A memory that says "I don't know" is worth more than one that invents. Hold onto that; today we make it say that out loud.</p>
+      </div>
+    </div>
+
+    <div class="danger">
+      <div class="danger-t">The lesson that runs through all three</div>
+      <p><strong>A green checkmark is not evidence.</strong> Class 3 shipped with two bugs that both reported <code>"status": "success"</code> while writing wrong data — base64 stored as text, and four documents merged into one row by a unique constraint. They were caught by looking at the rows, not at the status. Today's verification does the same thing: we listen to the audio, we do not trust the file size.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ TODAY ═══════════════════ -->
+  <section class="section" id="today">
+    <h2>Where today sits</h2>
+    <p class="lead">One promise: <strong>you send a voice note from your phone, and it answers out loud, from your own documents.</strong></p>
+
+    <div class="diagram">
+<pre>phone --voice note--&gt; Telegram --&gt; n8n --&gt; ogg to mp3 --&gt; transcribe
+                                                             |
+                                    <span class="keep">webhook /ask  (CLASS 3, UNCHANGED)</span>
+                                                             |
+                                                        speak the answer
+                                                             |
+phone &lt;--voice note-- Telegram &lt;-- ffmpeg &lt;-- parse SSE &lt;----+</pre>
+    </div>
+
+    <div class="note">
+      <div class="note-t">The one line that matters</div>
+      <p><strong>Class 3 is not touched.</strong> No new table, no schema change, no migration. We call your existing <code>/ask</code> webhook over HTTP — the same one your dashboard's Ask tab calls — and do something new with the answer.</p>
+      <p>That has a useful consequence when something breaks today: <em>does your Ask tab still work?</em> If yes, the fault is in this class. If no, the fault is in Class 3. One question splits every problem in half in ten seconds.</p>
+    </div>
+
+    <h3>Everything it needs, you already have</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Piece</th><th>What it costs you</th></tr></thead>
+        <tbody>
+          <tr><td>Transcription</td><td>Your <strong>OpenRouter key from Class 1</strong>. No new credential.</td></tr>
+          <tr><td>Speech</td><td>The same key.</td></tr>
+          <tr><td>Audio conversion</td><td><strong>ffmpeg is already inside your n8n container.</strong> Nothing to install.</td></tr>
+          <tr><td>Transport</td><td>A Telegram bot token. Free, two minutes, <strong>no card</strong>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>One new signup, and it is the free kind.</p>
+  </section>
+
+  <!-- ═══════════════════ PREWORK ═══════════════════ -->
+  <section class="section" id="prework">
+    <h2>Before the hour · 10 minutes</h2>
+    <p>The one command at the top walks you through all of this. If you are doing it by hand, this is the whole list — and <strong>the order matters</strong>.</p>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">1</div><div class="step-title">Make a bot with @BotFather</div></div>
+      <p>In Telegram, search <strong>@BotFather</strong> — the blue check is on the account. Send <code>/newbot</code>, give it a name humans see, then a username that is unique across all of Telegram and ends in <code>bot</code>. Expect a couple of rejections before one is free.</p>
+      <div class="danger">
+        <div class="danger-t">That token is a password</div>
+        <p>Anyone who has it controls your bot completely. Do not paste it into a chat, a screen share, a prompt, or the class thread. In n8n it goes into a <strong>credential</strong>, so exported workflows carry the credential's <em>name</em> and never its value. Leaked it? Send <code>/revoke</code> to BotFather.</p>
+      </div>
+      <div class="warn">
+        <div class="warn-t">Running Content Mate from Class 7? Make a SECOND bot.</div>
+        <p>n8n prints the reason on the trigger node: <em>"you can use just one Telegram trigger for each bot at a time."</em> Telegram delivers each message once, to one place. Point two workflows at one bot and messages start vanishing — <strong>with no error, no failed execution, and nothing in any log.</strong></p>
+        <p>Name the credential <code>Brain Bot (Telegram)</code>, not <code>Telegram account</code>. n8n links credentials by name on import, and two with the same name will eventually attach the wrong token to the wrong workflow and look like it worked.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">2</div><div class="step-title">Press Start and send it a message</div></div>
+      <p>Open the bot you just made and press <strong>Start</strong>, then send it anything. Nothing will answer — correct, there is no workflow behind it yet. What matters is that the conversation now exists, which is what step 3 needs.</p>
+      <p><strong>Do it from the phone you will use in class.</strong></p>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">3</div><div class="step-title">Get your chat id — now, not later</div></div>
+      <p>Open this in a browser with your token in place of <code>YOUR_TOKEN</code>:</p>
+      <div class="code">
+        <div class="code-label">browser</div>
+        <button class="cp" type="button">copy</button>
+<pre class="wrap">https://api.telegram.org/botYOUR_TOKEN/getUpdates</pre>
+      </div>
+      <p>Find <code>"chat":{"id":123456789,</code> — that number is yours. Write it down.</p>
+      <div class="danger">
+        <div class="danger-t">The trap · do this BEFORE any workflow exists</div>
+        <p>The moment n8n's Telegram Trigger goes active it registers a <strong>webhook</strong> on your bot, and from that second <code>getUpdates</code> stops working forever:</p>
+        <pre style="margin-top:8px">409  Conflict: can't use getUpdates method while webhook is active</pre>
+        <p style="margin-top:8px">That is not a broken bot and not a broken token — Telegram will not deliver messages two ways at once. Already hit it? Message <strong>@userinfobot</strong>, which replies with your numeric id and never touches your bot. Or read it off the first execution in n8n.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="step-num">4</div><div class="step-title">Two lines in <code>.env</code>, then restart</div></div>
+      <p>Add these to your stack's <code>.env</code>, next to your other keys:</p>
+      <div class="code">
+        <div class="code-label">append to .env — never overwrite it</div>
+        <button class="cp" type="button">copy</button>
+<pre>BRAIN_BOT_TOKEN=your-token-from-botfather
+BRAIN_OWNER_ID=your-numeric-chat-id</pre>
+      </div>
+      <div class="danger">
+        <div class="danger-t">Append. Never rewrite that file.</div>
+        <p><code>.env</code> holds the key that decrypts your saved n8n credentials. Replacing it locks you out of every credential you have saved.</p>
+      </div>
+      <p>Then restart the container — and this is the step that quietly ruins the hour when it is skipped:</p>
+      <div class="code">
+        <div class="code-label">terminal</div>
+        <button class="cp" type="button">copy</button>
+<pre>docker compose restart n8n</pre>
+      </div>
+      <div class="warn">
+        <div class="warn-t">Why the restart is not optional</div>
+        <p><strong>n8n reads environment variables when the container starts and never again.</strong> Add the line without restarting and you get an empty token — and Telegram answers an empty token with <code>404 Not Found</code>, which reads like a broken URL and is nothing of the kind.</p>
+        <p>Check it landed without printing the value: <code>docker compose exec n8n printenv BRAIN_BOT_TOKEN | wc -c</code> — bigger than 40 is right, <code>0</code> or <code>1</code> means the restart did not take.</p>
+      </div>
+    </div>
+
+    <h3>On the day, have these ready</h3>
+    <ul class="check" id="preflight">
+      <li><input type="checkbox" id="k1"><label for="k1">Bot created, token saved somewhere safe</label></li>
+      <li><input type="checkbox" id="k2"><label for="k2">You pressed <strong>Start</strong> and sent it a message</label></li>
+      <li><input type="checkbox" id="k3"><label for="k3">Your numeric chat id written down</label></li>
+      <li><input type="checkbox" id="k4"><label for="k4">Class 3's Ask tab answering questions about your documents</label></li>
+      <li><input type="checkbox" id="k5"><label for="k5">Class 3's Ask tab <strong>refusing</strong> one it cannot answer</label></li>
+      <li><input type="checkbox" id="k6"><label for="k6"><code>BRAIN_BOT_TOKEN</code> and <code>BRAIN_OWNER_ID</code> in <code>.env</code>, container restarted</label></li>
+      <li><input type="checkbox" id="k7"><label for="k7">Telegram on your phone, signed in</label></li>
+      <li><input type="checkbox" id="k8"><label for="k8"><strong>One question you actually want to ask your documents out loud</strong></label></li>
+    </ul>
+    <p style="margin-top:10px"><em>That last one is the point of the hour. Bring a real one.</em></p>
+  </section>
+
+  <!-- ═══════════════════ P1 ═══════════════════ -->
+  <section class="section" id="p1">
+    <h2>The build — three prompts</h2>
+    <p>Each prompt ends at a milestone you can see on your own phone. <strong>If you drop out at any of the three, you still have something that works.</strong> That split is deliberate: voice in / text out is already useful, and it is reached before any of the streaming machinery exists.</p>
+
+    <div class="step hero-step">
+      <div class="step-head"><div class="step-num">P1</div><div class="step-title">Ears</div><div class="step-time">0:13 – 0:25</div></div>
+      <p>Trigger, owner guard, download the file, convert ogg → mp3, transcribe.</p>
+      <p>Open <code>prompts/P1-ears.md</code> from the pack and paste it into Claude Code.</p>
+      <div class="warn">
+        <div class="warn-t">Why a conversion step exists at all</div>
+        <p>A Telegram voice note is <strong>ogg/opus</strong>. The transcription path that was measured at <code>200 · 1.7 s · verbatim</code> was measured on <strong>mp3</strong> — so P1 converts first, with the ffmpeg already in your container, to put you on the path that was actually tested rather than one that was assumed. One node, and it is honest about why it is there.</p>
+      </div>
+      <div class="ms">
+        <div class="ms-t">Milestone — check your phone</div>
+        <p>Send your bot a voice note. <strong>Your own words come back as text.</strong> Round trip under three seconds.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ GUARD ═══════════════════ -->
+  <section class="section" id="guard">
+    <h2>The guard — the part that can hurt you</h2>
+    <div class="step">
+      <div class="step-head"><div class="step-num gold">!</div><div class="step-title">Watch it refuse a stranger</div><div class="step-time">0:25 – 0:31</div></div>
+
+      <div class="danger">
+        <div class="danger-t">Read this even if you skip everything else</div>
+        <p><strong>A Telegram bot username is public and searchable.</strong> Nothing stops a stranger finding yours and messaging it. Today that bot is wired to a brain that has read your lease, your insurance policy and your invoices.</p>
+        <p style="font-size:16px"><strong>A bot that answers anyone is a bot that reads your documents to anyone.</strong></p>
+      </div>
+
+      <p>So the first thing the workflow does with an incoming message — before transcription, before anything — is compare the sender's chat id against yours and drop everything else. <strong>That is the second node, not a hardening step to get around to later.</strong> It is why the pre-work makes you find your chat id.</p>
+
+      <div class="note">
+        <div class="note-t">Why the guard reads <code>$env</code> and not the trigger's own field</div>
+        <p>n8n's Telegram Trigger has a <em>Restrict to Chat IDs</em> field. It is a plain string — so a chat id typed there <strong>ships inside the workflow JSON</strong> the moment you export or share it. Reading <code>$env.BRAIN_OWNER_ID</code> in a Code node keeps the value out of the file. Use the trigger field too if you like, as a second layer, knowing that trade.</p>
+      </div>
+
+      <div class="does">
+        <div class="does-t">Do this yourself — today</div>
+        <p>Message the bot from a second Telegram account, or ask someone to. <strong>Watch nothing happen.</strong> Until you have seen it refuse, you do not know that it does.</p>
+      </div>
+
+      <p>Would rather not put business documents behind a public username at all? That is a completely reasonable position, and <code>docs/UPGRADE-mic.md</code> does the same job through your dashboard's microphone instead. It needs HTTPS and it is more work. Nobody loses the option.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ P2 ═══════════════════ -->
+  <section class="section" id="p2">
+    <h2>P2 &amp; P3 — the answer, then the voice</h2>
+
+    <div class="step hero-step">
+      <div class="step-head"><div class="step-num">P2</div><div class="step-title">Ask</div><div class="step-time">0:31 – 0:38</div></div>
+      <p>Hand the transcript to your Class 3 <code>/ask</code> webhook. Unchanged, untouched, called over HTTP exactly as your dashboard calls it.</p>
+      <div class="ms">
+        <div class="ms-t">Milestone — check your phone</div>
+        <p>Send a voice note. <strong>The answer comes back as text, with the document it came from.</strong> The Class 3 brain is doing the thinking — the transcriber only heard you.</p>
+      </div>
+    </div>
+
+    <div class="step hero-step" id="p3">
+      <div class="step-head"><div class="step-num">P3</div><div class="step-title">Voice</div><div class="step-time">0:38 – 0:50</div></div>
+      <p>Speak the answer, convert it, send it back as a real voice note. Both traps live in this prompt.</p>
+
+      <div class="danger">
+        <div class="danger-t">Trap 1 · gpt-audio-mini refuses mp3</div>
+        <p>Audio output requires <code>stream: true</code>, and with streaming on the <strong>only</strong> accepted format is <code>pcm16</code>. Both failures come back as 400s with messages you only see if you read the body.</p>
+      </div>
+      <div class="danger">
+        <div class="danger-t">Trap 2 · concatenate the base64 BEFORE decoding it</div>
+        <p>Decoding each SSE frame separately and joining the bytes works by luck with base64 padding, and breaks the first time a frame's length is not a multiple of 3. Join the strings, then decode once.</p>
+      </div>
+      <div class="warn">
+        <div class="warn-t">Two questions at once collide on /tmp</div>
+        <p>Fixed temp filenames like <code>/tmp/answer.pcm</code> get overwritten when a second voice note arrives mid-flight. It does not error — <strong>it sends you the wrong answer.</strong> Every path carries <code>{{ $execution.id }}</code>, with a cleanup node after.</p>
+      </div>
+      <div class="ms">
+        <div class="ms-t">Milestone — check your phone</div>
+        <p>Send it again. <strong>Now you hear it.</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ REFUSAL ═══════════════════ -->
+  <section class="section" id="refusal">
+    <h2>The closing beat — ask it something it does not know</h2>
+    <div class="step">
+      <div class="step-head"><div class="step-num green">★</div><div class="step-title">Hear the refusal out loud</div><div class="step-time">0:50 – 0:55</div></div>
+      <p>Class 3 taught that a memory which says <em>"I don't know"</em> is worth more than one that guesses. Hearing that sentence in a synthetic voice, out of a phone speaker, is the strongest version of that lesson in the whole series.</p>
+      <div class="ms">
+        <div class="ms-t">Say it out loud, into your phone</div>
+        <p>Ask your bot something your documents genuinely do not cover — <em>"what is my employee health plan copay?"</em> if you never uploaded one.</p>
+        <p><strong>You should hear: "I don't have that in your documents."</strong></p>
+        <p>If it invents an answer instead, you are not finished — and the problem is in Class 3, not here. Today just gave the invention a voice.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ VERIFY ═══════════════════ -->
+  <section class="section" id="verify">
+    <h2>Verify — and don't trust the file size</h2>
+    <div class="code">
+      <div class="code-label">from the pack folder</div>
+      <button class="cp" type="button">copy</button>
+<pre>bash verify.sh</pre>
+    </div>
+    <p>It prints <strong>Ready</strong>, or names exactly what is missing: libopus in the container, both env vars, the Class 3 refusal, and whether both model slugs still exist on OpenRouter.</p>
+
+    <div class="note">
+      <div class="note-t">Why it checks the model slugs</div>
+      <p><code>google/gemini-2.0-flash-001</code> returned <strong>404 — retired</strong> during this build. A retired slug fails as a <em>broken workflow</em> rather than a bad name, so you go hunting in the wrong place. The preflight finds a retirement before the hour does.</p>
+    </div>
+
+    <div class="does">
+      <div class="does-t">The closed loop — the test that actually proves it</div>
+      <p><strong>Forward the bot's own voice note back to the bot.</strong> It transcribes its own reply. If what comes back is the sentence it just said, the audio is real speech and not a plausibly-sized file full of static.</p>
+      <p>That is the same discipline as Class 3: a green checkmark is not evidence. Look at the rows. Listen to the audio.</p>
+    </div>
+
+    <ul class="check" id="donecheck">
+      <li><input type="checkbox" id="d1"><label for="d1">Voice note in → my own words back as <strong>text</strong> (P1)</label></li>
+      <li><input type="checkbox" id="d2"><label for="d2">A second account messages the bot and <strong>nothing happens</strong></label></li>
+      <li><input type="checkbox" id="d3"><label for="d3">Voice note in → the answer as text, <strong>with its source</strong> (P2)</label></li>
+      <li><input type="checkbox" id="d4"><label for="d4">Voice note in → <strong>I hear the answer</strong> (P3)</label></li>
+      <li><input type="checkbox" id="d5"><label for="d5">I asked something it does not know and <strong>heard it refuse</strong></label></li>
+      <li><input type="checkbox" id="d6"><label for="d6">I forwarded its voice note back and it transcribed its own words</label></li>
+      <li><input type="checkbox" id="d7"><label for="d7"><code>bash verify.sh</code> says Ready — output posted in the class thread</label></li>
+    </ul>
+  </section>
+
+  <!-- ═══════════════════ COST ═══════════════════ -->
+  <section class="section" id="cost">
+    <h2>What it costs to run</h2>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Piece</th><th>Per spoken question</th></tr></thead>
+        <tbody>
+          <tr><td>Transcription — <code>google/gemini-2.5-flash</code>, ~10 s of audio</td><td>fractions of a cent</td></tr>
+          <tr><td>The Class 3 answer — <code>anthropic/claude-haiku-4.5</code>, capped at two sentences</td><td>fractions of a cent</td></tr>
+          <tr><td>Speech — <code>openai/gpt-audio-mini</code>, ~6 s out</td><td>the largest of the three</td></tr>
+          <tr><td>Telegram</td><td>free</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="warn">
+      <div class="warn-t">Estimated, not measured — and I am not going to pretend otherwise</div>
+      <p>Pennies per question, no subscription, no minimum, and it costs nothing when you are not talking to it. <strong>The real figure gets read off live OpenRouter usage headers after this class and published here.</strong> Until then it is an estimate and it is labelled as one.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ TROUBLE ═══════════════════ -->
+  <section class="section">
+    <h2>When it goes wrong</h2>
+    <div class="tw">
+      <table>
+        <thead><tr><th>What you see</th><th>What it means</th></tr></thead>
+        <tbody>
+          <tr><td>The bot does nothing at all, no execution appears in n8n</td><td>The workflow is saved but not <strong>Active</strong>. A Telegram Trigger only registers its webhook when the workflow activates.</td></tr>
+          <tr><td>Everything worked, then stopped after you edited something</td><td>You deactivated and reactivated. Telegram is fine — check the workflow is Active again.</td></tr>
+          <tr><td><code>401 Unauthorized</code></td><td>Telegram <strong>read</strong> your token and rejected it. A dropped character, or it was revoked.</td></tr>
+          <tr><td><code>404 Not Found</code></td><td>Telegram never found the endpoint to check a token against. Usually the word <code>bot</code> missing in front of the token — or, in this class, <strong>an empty <code>BRAIN_BOT_TOKEN</code> because the container was not restarted.</strong></td></tr>
+          <tr><td><code>409 Conflict</code> on <code>getUpdates</code></td><td>Your workflow is active and holding the webhook. Correct behaviour. Use <strong>@userinfobot</strong> for your chat id.</td></tr>
+          <tr><td>Messages just vanish, no error anywhere</td><td>Two n8n triggers on one bot. Make a second bot.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <div class="note-t">401 and 404 look alike and are not</div>
+      <p>Go hunting for a bad character on a 404 and you will not find one, <strong>because the token was never the problem.</strong></p>
+    </div>
+    <p>Post the <strong>exact error text</strong> in the class thread — the wording is the diagnosis. Never post your token.</p>
+  </section>
+
+  <!-- ═══════════════════ NEXT ═══════════════════ -->
+  <section class="section" id="next">
+    <h2>Homework, and where this goes</h2>
+    <div class="hw">
+      <h3>Before Class 5</h3>
+      <ul>
+        <li><strong>Use it for a week.</strong> Ask it real questions, out loud, from wherever you actually are — the truck, the job site, the kitchen. That is the whole reason it has ears.</li>
+        <li><strong>Test the refusal from a second account</strong> if you have not yet. Post that it refused.</li>
+        <li><strong>Post one question it got wrong.</strong> Those are worth more to the room than the ones it got right.</li>
+      </ul>
+    </div>
+    <p><strong>Class 5 — hands and a clock.</strong> The 7am digest that tells you what changed overnight, draft-don't-send so it writes the reply and waits for you, and reminders. It has perceived, remembered, reasoned, and now spoken. Class 5 is where it <em>acts</em>.</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Class</th><th>What it adds</th><th>When</th></tr></thead>
+        <tbody>
+          <tr><td>5 · Hands and a clock</td><td>Digest, draft-don't-send, reminders</td><td>Sep 9</td></tr>
+          <tr><td>6 · The graph</td><td>How things connect, not just what they say</td><td>Sep 16</td></tr>
+          <tr><td>7 · Content Mate</td><td>The brain that publishes</td><td>Sep 23</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="foot">
+    <div class="sig">Hector Diaz</div>
+    <p style="margin-bottom:6px">Orbix Automation Solutions · <a href="https://getorbix.com">getorbix.com</a></p>
+    <p style="font-size:12.5px">The Brain That Runs a Company — Class 4 of 7 · AI Auto Base</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ── OS switcher ─────────────────────────────────────────────
+     Default to what the visitor is actually on, so the copy button
+     next to the fold is already the right command. */
+  var buttons = Array.prototype.slice.call(document.querySelectorAll(".osbar button"));
+  var panels  = Array.prototype.slice.call(document.querySelectorAll(".osonly"));
+
+  function showOS(os){
+    buttons.forEach(function(b){ b.classList.toggle("on", b.dataset.os === os); });
+    panels.forEach(function(p){ p.classList.toggle("show", p.dataset.os === os); });
+    try { localStorage.setItem("bc04-os", os); } catch(e){ /* private mode */ }
+  }
+
+  function detectOS(){
+    try {
+      var saved = localStorage.getItem("bc04-os");
+      if (saved) return saved;
+    } catch(e){ /* private mode - fall through to sniffing */ }
+    var ua = navigator.userAgent || "";
+    if (/Windows/i.test(ua))        return "win";
+    if (/Mac OS X|Macintosh/i.test(ua)) return "mac";
+    if (/Linux|X11|CrOS/i.test(ua)) return "linux";
+    return "mac";
+  }
+
+  buttons.forEach(function(b){
+    b.addEventListener("click", function(){ showOS(b.dataset.os); });
+  });
+  showOS(detectOS());
+
+  /* ── copy buttons ────────────────────────────────────────────
+     This page gets downloaded and double-clicked as often as it is
+     visited, so the file:// case is not an edge case here.
+
+     Measured in Chromium on file:// (2026-08-27):
+
+       window.isSecureContext .......... true
+       navigator.clipboard ............. exists
+       clipboard.writeText() ........... REJECTS, NotAllowedError
+       document.execCommand("copy") .... returns true
+
+     So gating on isSecureContext picks the API that fails and skips
+     the one that works. Rejection is a reason to fall through to
+     execCommand, never a reason to tell someone to select it by
+     hand. */
+  function legacyCopy(text){
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function copyText(text, btn){
+    function done(ok){
+      btn.textContent = ok ? "copied" : "select it";
+      btn.classList.toggle("ok", ok);
+      setTimeout(function(){ btn.textContent = "copy"; btn.classList.remove("ok"); }, 1600);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(
+        function(){ done(true); },
+        function(){ done(legacyCopy(text)); }
+      );
+      return;
+    }
+    done(legacyCopy(text));
+  }
+
+  document.querySelectorAll(".cp").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var pre = btn.parentNode.querySelector("pre");
+      if (pre) copyText(pre.textContent, btn);
+    });
+  });
+
+  /* ── checklists that survive a reload ────────────────────────
+     Someone follows this live, closes the tab, comes back. Ticks
+     are per-viewer and never leave the browser. */
+  document.querySelectorAll(".check input[type=checkbox]").forEach(function(box){
+    var key = "bc04-" + box.id;
+    try {
+      if (localStorage.getItem(key) === "1") box.checked = true;
+    } catch(e){ /* storage blocked - the box just starts empty */ }
+    box.addEventListener("change", function(){
+      try {
+        if (box.checked) localStorage.setItem(key, "1");
+        else localStorage.removeItem(key);
+      } catch(e){ /* nothing to do; the tick still works this session */ }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
