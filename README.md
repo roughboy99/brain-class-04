@@ -185,9 +185,10 @@ mismatch means the sources moved, not that the clock did.
 | 2 · Give It Senses | n8n and Postgres, talking to each other | Aug 19 |
 | 3 · Ask Your Brain | Memory it can search, with sources | [brain-class-03](https://roughboy99.github.io/brain-class-03/) |
 | **4 · Ears and a Voice** | **Telegram in, spoken answers out** | **here** |
-| 5 · Hands and a Clock | The 7am digest, draft-don't-send, reminders | Sep 9 |
-| 6 · The Graph | How things connect, not just what they say | Sep 16 |
-| 7 · Content Mate | The brain that publishes | Sep 23 |
+| 5 · Hands and a Clock | The 7am digest, draft-don't-send | [brain-class-05](https://roughboy99.github.io/brain-class-05/) |
+| 6 · The Graph | What connects to what | [brain-class-06](https://roughboy99.github.io/brain-class-06/) |
+| 7 · A Clock It Can Read | Your real calendar, both directions | [brain-class-07](https://roughboy99.github.io/brain-class-07/) |
+| — · Content Mate | The public voice — optional, in the classroom | [brain-content-mate](https://roughboy99.github.io/brain-content-mate/) |
 
 ---
 
