@@ -70,7 +70,7 @@ If that one fails, say so and carry on anyway - it is a convenience, not a depen
 
 The file must have this SHA-256:
 
-  e7093e68c8aca2ee8e4e7012be0af3cfdb95ad9cd4cb353c8e7bedf32eb356b4
+  d451658da78bd5b3083bec38a8a0edc54019109af82e3867338d264c94cdb640
 
 Mac / Linux / WSL:   sha256sum class-04-voice-pack-DRAFT.zip
 Mac (if that is missing): shasum -a 256 class-04-voice-pack-DRAFT.zip

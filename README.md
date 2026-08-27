@@ -1,6 +1,6 @@
 # Class 4 — Ears and a Voice
 
-**The Brain That Runs a Company, Part 4 of 7.** You send a voice note from your phone.
+**The Brain That Runs a Company, Part 4 of 6.** You send a voice note from your phone.
 Your brain answers out loud, from your own documents.
 
 > **Student front door: https://roughboy99.github.io/brain-class-04/**
@@ -170,7 +170,7 @@ cd downloads && sha256sum -c SHA256SUMS
 
 | File | SHA-256 |
 |---|---|
-| `class-04-voice-pack-DRAFT.zip` | `e7093e68c8aca2ee8e4e7012be0af3cfdb95ad9cd4cb353c8e7bedf32eb356b4` |
+| `class-04-voice-pack-DRAFT.zip` | `d451658da78bd5b3083bec38a8a0edc54019109af82e3867338d264c94cdb640` |
 
 This pack pins its zip timestamps, so the same sources always produce the same hash. A
 mismatch means the sources moved, not that the clock did.

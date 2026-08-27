@@ -11,7 +11,7 @@ getting that wrong is the one mistake here that is annoying to undo.
 
 ## 1. You need TWO bots, and this is the one that listens
 
-If you are also running **Content Mate** (Class 7), you already have a Telegram bot. **Do
+If you are also running **Content Mate**, you already have a Telegram bot. **Do
 not reuse it.** Make a second one.
 
 This is not tidiness. It is a hard limit, and n8n prints it on the trigger node itself:
@@ -19,7 +19,7 @@ This is not tidiness. It is a hard limit, and n8n prints it on the trigger node 
 > *Due to Telegram API limitations, you can use just one Telegram trigger for each bot at
 > a time.*
 
-| | **Brain bot** (Class 4 — this one) | **Content Mate bot** (Class 7) |
+| | **Brain bot** (Class 4 — this one) | **Content Mate bot** |
 |---|---|---|
 | What it does | **Listens.** You talk to it, it answers | **Speaks only.** Tells you a post went out |
 | n8n node | **Telegram Trigger** — receives | Telegram `sendMessage` — sends |
@@ -48,7 +48,7 @@ Use these exactly. Every prompt, script and error message in this pack assumes t
 | BotFather name | `My Brain` | `Content Mate` |
 | BotFather username | `<yourname>_brain_bot` | `<yourname>_contentmate_bot` |
 | n8n credential | **`Brain Bot (Telegram)`** | `Content Mate (Telegram)` |
-| `.env` token variable | **`BRAIN_BOT_TOKEN`** | (Class 7 keeps its token in the credential) |
+| `.env` token variable | **`BRAIN_BOT_TOKEN`** | (Content Mate keeps its token in the credential) |
 | `.env` owner variable | **`BRAIN_OWNER_ID`** | — |
 
 > **n8n links credentials by NAME when you import a workflow.** If both of yours are called

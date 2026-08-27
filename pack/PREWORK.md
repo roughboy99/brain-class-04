@@ -17,7 +17,7 @@ will waste your afternoon if you hit it blind, so read to the end before you sta
 
 ## Already running Content Mate? Make a SECOND bot.
 
-If you took Class 7 you already have a Telegram bot that tells you when a post went out.
+If you run Content Mate you already have a Telegram bot that tells you when a post went out.
 **Do not reuse it here.** Make a new one.
 
 n8n prints the reason on the trigger node itself: *"Due to Telegram API limitations, you
@@ -25,7 +25,7 @@ can use just one Telegram trigger for each bot at a time."* Telegram delivers ea
 once, to one place. Point two workflows at one bot and messages start vanishing — with no
 error, no failed execution and nothing in any log.
 
-| | **Brain bot** (this class) | **Content Mate bot** (Class 7) |
+| | **Brain bot** (this class) | **Content Mate bot** |
 |---|---|---|
 | What it does | **Listens** — you talk to it | **Speaks** — it notifies you |
 | Registers a webhook | **Yes** | No |
