@@ -188,6 +188,7 @@ mismatch means the sources moved, not that the clock did.
 | 5 · Hands and a Clock | The 7am digest, draft-don't-send | [brain-class-05](https://roughboy99.github.io/brain-class-05/) |
 | 6 · The Graph | What connects to what | [brain-class-06](https://roughboy99.github.io/brain-class-06/) |
 | 7 · A Clock It Can Read | Your real calendar, both directions | [brain-class-07](https://roughboy99.github.io/brain-class-07/) |
+| **8 · Make It a Project** | History, versions, and a README | [brain-class-08](https://roughboy99.github.io/brain-class-08/) |
 | — · Content Mate | The public voice — optional, in the classroom | [brain-content-mate](https://roughboy99.github.io/brain-content-mate/) |
 
 ---
