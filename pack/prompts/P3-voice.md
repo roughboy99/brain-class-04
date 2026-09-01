@@ -30,21 +30,15 @@ https://api.telegram.org/bot{{ $env.BRAIN_BOT_TOKEN }}/sendVoice
 
 The exported JSON then carries the **variable's name**, never its value.
 
-In your stack folder, add to `.env`:
+Run the private setup from the pack in an off-camera terminal:
 
 ```bash
-BRAIN_BOT_TOKEN=paste-the-token-BotFather-gave-you
+bash setup-telegram-private.sh --stack ~/brain
+bash setup-telegram-private.sh --stack ~/brain --status
 ```
 
-Then restart:
-
-```bash
-docker compose restart n8n
-docker compose exec n8n printenv BRAIN_BOT_TOKEN
-```
-
-If that second command prints nothing, the restart did not take and the next section will
-fail with a `404` that looks like a broken URL.
+If status reports the token missing, rerun setup. It injects the value through a Compose
+override and recreates n8n; it never prints the secret.
 
 > **This works on every member's stack, not just on mine.** n8n blocks nodes from reading
 > environment variables by default. The starter pack's installer sets
@@ -82,9 +76,13 @@ Add after `Shape the reply`:
        "stream": true,
        "messages": [
          { "role": "user",
-           "content": "Read this aloud exactly as written, with no preamble: <the ANSWER field from Shape the reply, not the combined text>" }
+           "content": {{ JSON.stringify('Read this aloud exactly as written, with no preamble: ' + String($json.speech ?? '')) }} }
        ]
      }
+
+   Do not put quotes around the `content` expression. `JSON.stringify` supplies them and
+   safely escapes quotation marks, newlines and backslashes in the answer. Raw
+   interpolation can turn an ordinary document answer into malformed JSON.
 
    TRAP ONE - the format and the streaming flag are locked together:
      format "mp3" with no streaming  -> 400 "Audio output requires stream: true"
@@ -164,10 +162,11 @@ Add after `Shape the reply`:
        voice    = the binary field from step 5 (n8n Binary File parameter type)
    - No credential attached. The token comes from the environment variable in the URL.
 
-7. Execute Command node `Clean up`, always runs:
+7. Execute Command node `Clean up`, runs after a successful `sendVoice`:
      rm -f /tmp/voice-{{ $execution.id }}.* /tmp/answer-{{ $execution.id }}.*
-   Every execution leaves four files in the container otherwise, and nothing removes
-   them until the container is recreated.
+   An earlier failed node can still leave temp files behind. During the unverified study
+   build, remove those files manually or recreate the container. A production export
+   needs tested error-output cleanup before this can be described as "always".
 
 Keep the text Telegram message too - send it before the voice note. Seeing the answer
 written down while you listen is better than either alone, and it is what you screenshot
@@ -203,7 +202,7 @@ Taken on 2026-08-25 running the real path, not read from documentation:
 | Frames recovered | 22 `data:` lines → 9 audio frames |
 | Reassembled PCM | 266,400 bytes = 5.55 s |
 | ffmpeg → ogg/opus | 22,297 bytes, 5.56 s, `exitCode 0` |
-| End to end inside n8n | **2 seconds** |
+| Processing-path observation | **about 2 seconds in that probe; not a Telegram/phone guarantee** |
 
 If your `Reassemble the audio` node reports zero frames or a `pcmBytes` of 0, stop there.
 Everything downstream will produce a plausible-looking file out of nothing.
@@ -235,7 +234,7 @@ distinguishes *"audio arrived"* from *"speech arrived"*.
 | The voice note plays as static or noise | Trap two: the base64 was decoded per frame instead of concatenated first. Check the `join('')`. |
 | It plays too fast, too slow, or chipmunked | The ffmpeg **input** flags. `-f s16le -ar 24000 -ac 1`, all three, before `-i`. |
 | It arrives as a music player, not a voice bubble | You used the Telegram node's `sendAudio`. There is no `sendVoice` operation on that node — this call has to be the HTTP Request. |
-| `404 Not Found` from `api.telegram.org` | The URL, not the token. Almost always `BRAIN_BOT_TOKEN` is empty in the container: `docker compose exec n8n printenv BRAIN_BOT_TOKEN`. Empty → the URL became `/bot/sendVoice`. Restart n8n. |
+| `404 Not Found` from `api.telegram.org` | The URL, not the token. Usually `BRAIN_BOT_TOKEN` is empty in the container. Check private setup with `--status`; never print the token. |
 | `401 Unauthorized` from `api.telegram.org` | The token itself. Telegram read it and rejected it. Revoked, or a character dropped. |
 | The expression `{{ $env.BRAIN_BOT_TOKEN }}` renders empty in the editor | Your n8n blocks env access in nodes. `N8N_BLOCK_ENV_ACCESS_IN_NODE` must be `"false"`. The starter pack sets it. |
 | `Bad Request: VOICE_MESSAGES_FORBIDDEN` | The recipient has voice messages disabled in their Telegram privacy settings. Rare, and it is their setting, not your bug. |

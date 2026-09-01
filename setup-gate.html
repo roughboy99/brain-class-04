@@ -92,7 +92,7 @@
 
   <div class="warn">
     <div class="warn-t">Do these in order</div>
-    <p>Step 3 stops working permanently once the workflow in class goes live. That is not a bug and it is explained there — but it does mean you cannot come back to it later.</p>
+    <p>Step 3 stops working while the workflow webhook is active. That is not a bug; deactivate the trigger or remove the webhook to restore polling.</p>
   </div>
 
   <!-- 1 -->
@@ -173,10 +173,10 @@
   <!-- 4 -->
   <div class="step" data-step="4">
     <div class="step-head">
-      <div class="step-num">4</div><div class="step-title">Make the n8n credential</div>
+      <div class="step-num">4</div><div class="step-title">Open the n8n credential form</div>
       <label class="step-tick"><input type="checkbox"> done</label>
     </div>
-    <p>In n8n: <strong>Credentials → Add credential → Telegram API</strong>. Paste the token there.</p>
+    <p>In n8n: <strong>Credentials → Add credential → Telegram API</strong>. Name it now; the private setup in step 5 will put the token on your clipboard without displaying it.</p>
     <div class="warn">
       <div class="warn-t">Name it <code>Brain Bot (Telegram)</code> — not <code>Telegram account</code></div>
       <p>n8n links credentials <strong>by name</strong> when you import a workflow. Two credentials called <code>Telegram account</code> will eventually attach the wrong token to the wrong workflow, and it will look like it worked.</p>
@@ -190,37 +190,36 @@
   <!-- 5 -->
   <div class="step" data-step="5">
     <div class="step-head">
-      <div class="step-num">5</div><div class="step-title">Two lines in <code>.env</code>, then restart</div>
+      <div class="step-num">5</div><div class="step-title">Run private setup off camera</div>
       <label class="step-tick"><input type="checkbox"> done</label>
     </div>
-    <p><strong>Append</strong> these to your stack's <code>.env</code>, next to your other keys:</p>
+    <p>First confirm a public HTTPS URL reaches this n8n instance; Telegram cannot call localhost. Keep this page or the slide deck on the shared screen and run:</p>
     <div class="code">
-      <div class="code-label">append — do not rewrite the file</div>
+      <div class="code-label">unshared terminal; all input is hidden</div>
       <button class="cp" type="button">copy</button>
-<pre>BRAIN_BOT_TOKEN=your-token-from-botfather
-BRAIN_OWNER_ID=your-numeric-chat-id</pre>
+<pre>bash setup-telegram-private.sh --stack ~/brain</pre>
     </div>
     <div class="danger">
-      <div class="danger-t">Append. Never overwrite.</div>
-      <p><code>.env</code> holds the key that decrypts your saved n8n credentials. Replacing that file locks you out of every credential you have saved — including the OpenRouter one from Class 1.</p>
+      <div class="danger-t">The private file is ignored and mode 600</div>
+      <p>The script does not replace your <code>.env</code> or encryption key. It adds a private env file and Compose override, then recreates n8n so the values actually reach the service.</p>
     </div>
-    <p>Then restart n8n:</p>
+    <p>Confirm state without displaying values:</p>
     <div class="code">
       <div class="code-label">terminal, from your stack folder</div>
       <button class="cp" type="button">copy</button>
-<pre>docker compose restart n8n</pre>
+<pre>bash setup-telegram-private.sh --stack ~/brain --status</pre>
     </div>
     <div class="warn">
-      <div class="warn-t">The restart is the step that ruins the hour when it is skipped</div>
-      <p><strong>n8n reads environment variables when the container starts and never again.</strong> Add the lines without restarting and the token is empty — and Telegram answers an empty token with <code>404 Not Found</code>, which reads exactly like a broken URL.</p>
+      <div class="warn-t">A plain restart is not enough</div>
+      <p>The Class 2 Compose service did not map arbitrary <code>.env</code> keys, and <code>docker compose restart</code> does not apply changed configuration. The setup script handles both facts.</p>
     </div>
-    <p>Confirm it landed, without printing the value:</p>
+    <p>After pasting the clipboard into the n8n credential, clear it:</p>
     <div class="code">
       <div class="code-label">terminal</div>
       <button class="cp" type="button">copy</button>
-<pre>docker compose exec n8n printenv BRAIN_BOT_TOKEN | wc -c</pre>
+<pre>bash setup-telegram-private.sh --stack ~/brain --clear-clipboard</pre>
     </div>
-    <p>Bigger than 40 is right. <code>0</code> or <code>1</code> means it is empty and the restart did not take effect.</p>
+    <p>The terminal reports only set/missing state and character counts.</p>
   </div>
 
   <!-- back to claude -->
@@ -229,7 +228,7 @@ BRAIN_OWNER_ID=your-numeric-chat-id</pre>
   <div class="code">
     <div class="code-label">paste into Claude Code</div>
     <button class="cp" type="button">copy</button>
-<pre>I finished the setup gate. My bot exists, I pressed Start and messaged it, I have my numeric chat id written down, I made the n8n credential named "Brain Bot (Telegram)", and I added BRAIN_BOT_TOKEN and BRAIN_OWNER_ID to .env and restarted the n8n container. Verify it rather than believing me, then carry on.</pre>
+<pre>I finished the setup gate. My bot exists, I pressed Start and messaged it, I have my numeric chat id privately recorded, my public HTTPS URL reaches n8n, I made the credential named "Brain Bot (Telegram)", and the private setup script recreated n8n. Verify status without printing any secret, then carry on.</pre>
   </div>
   <div class="note">
     <div class="note-t">It should not take your word for it</div>

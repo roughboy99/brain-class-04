@@ -42,7 +42,8 @@ the brain you already have; if that brain is not answering, this cannot make it.
 **`PREWORK.md`, done before the hour.** One Telegram bot from BotFather, free, two minutes,
 no card — plus your numeric chat id. **Read it before you touch anything**, because there
 is an ordering trap in it: the moment n8n's Telegram Trigger goes live, the obvious way to
-find your chat id returns `409 Conflict` forever.
+find your chat id returns `409 Conflict` while the webhook is active. Removing the
+webhook restores `getUpdates`.
 
 **One new signup, and it is the free kind.** Everything else here runs on credentials you
 already have:

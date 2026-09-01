@@ -50,8 +50,8 @@ beginners are.
 |---|---|
 | [`index.html`](index.html) | **The show notes.** Classes 1–3 recap, the install, the run of the hour, the traps, the verification |
 | [`install.txt`](install.txt) | What the one command fetches — the install prompt as plain text |
-| [`setup-gate.html`](setup-gate.html) | The five browser steps no script can do: BotFather, your chat id, the n8n credential, the restart |
-| [`downloads/`](downloads/) | The pack zip and `SHA256SUMS` |
+| [`setup-gate.html`](setup-gate.html) | The browser steps plus the off-camera private setup handoff |
+| [`downloads/`](downloads/) | Pre-class pack, slide deck, legacy draft pack and `SHA256SUMS` |
 | [`pack/`](pack/) | The pack unzipped — every file readable here without downloading anything |
 
 Both HTML pages work standalone from `file://`. They make **no network requests at all**
@@ -68,7 +68,8 @@ Class 4 does not build a brain. It plugs a phone into the one you already have.
 | **The starter pack** — Node, Claude Code, Docker, n8n, Postgres | `bash verify.sh` from the starter pack says **Ready** |
 | **Class 3 working** — your dashboard's Ask tab answers a question about your documents | Ask it something your documents cover. Then ask something they do not — it must **refuse**, not guess |
 | **Telegram on your phone** | The desktop app alone is not enough; you need to record voice notes |
-| **Pre-work done** | The five steps in [`setup-gate.html`](setup-gate.html). About ten minutes, no card |
+| **Public HTTPS for n8n** | Telegram cannot send a trigger webhook to localhost |
+| **Pre-work done** | The five steps in [`setup-gate.html`](setup-gate.html), including private setup |
 
 New to the series? Start at **[Class 3](https://roughboy99.github.io/brain-class-03/)** —
 it covers a machine with nothing installed at all, one path per platform.
@@ -78,24 +79,18 @@ the wrong class.
 
 ---
 
-## One file is missing from the pack, on purpose
+## The workflow is included for study, not claimed as finished
 
-The zip is named `class-04-voice-pack-DRAFT.zip` and the word DRAFT is deliberate.
+`class-04-voice-PRECLASS.zip` includes
+`workflow/09-voice-ask.UNVERIFIED.json`. It is generated, schema-checked and useful for
+study or inactive import. It has not passed the live Telegram release gate, so it is not
+the finished fallback and must remain inactive before class.
 
-`demo/09-voice-ask.json` — the finished workflow you would import if a build went sideways
-— **is not in it.** It does not exist yet, because that workflow is built live in this
-class and no honest copy of it exists to ship. Producing one in advance means activating
-an n8n Telegram Trigger against a throwaway bot first, since doing so registers a webhook
-and makes `getUpdates` return `409` on that bot permanently.
+`CLAIMS-AUDIT.md` names the remaining tests: public webhook inspection, owner text and
+voice, second-account silence, failure paths, export and credential scan. Only the exact
+JSON that passes those tests should lose the `UNVERIFIED` label.
 
-**Five files in the pack refer to it anyway:** `README.md`, all three prompts, and
-`BUILD-THE-BOT.md`. `DRAFT.md` at the root of the pack names every one of them, so a
-member who hits a dead reference knows in ten seconds that the download is not broken.
-
-`BUILD-THE-BOT.md` walks the same workflow node by node and is complete. It is slower to
-follow than an import; it is not missing anything.
-
-The export lands in an updated pack after the class, on this same URL.
+The older `class-04-voice-pack-DRAFT.zip` remains in downloads as a historical artifact.
 
 ---
 
@@ -170,7 +165,10 @@ cd downloads && sha256sum -c SHA256SUMS
 
 | File | SHA-256 |
 |---|---|
-| `class-04-voice-pack-DRAFT.zip` | `d451658da78bd5b3083bec38a8a0edc54019109af82e3867338d264c94cdb640` |
+| `class-04-voice-PRECLASS.zip` | `f082668be86bb9c03fdc8de7416ea93970d2a2269eca11a5cd6b060ca9c1d2cd` |
+| `class-04-telegram-integration.pptx` | `98dc4f66a9cb7e46d861c6e26a73d490dd32ab9b68f3b746aee25bbdccaa610e` |
+| `class-04-telegram-integration.pdf` | `8179e55343dc6687dd28001a06b5372acac2d18d83bf257d85c7a0d77dc6875a` |
+| `class-04-voice-pack-DRAFT.zip` | `959c0e62cf87ed9b0b96b0bfeb19cd2ca32b0d0d4cc62da96c2773a78a7362dc` |
 
 This pack pins its zip timestamps, so the same sources always produce the same hash. A
 mismatch means the sources moved, not that the clock did.

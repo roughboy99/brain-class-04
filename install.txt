@@ -7,8 +7,8 @@ Read this part before you do anything, because it changes what "done" means here
 
   Class 4 is built LIVE, in the class, from three prompts. This installer does NOT
   build the bot for you. Its job is to get the pack onto my machine, prove that the
-  things Class 4 depends on are actually working, and set up the two environment
-  variables that have to exist before the hour starts. If you finish all of that and
+  things Class 4 depends on are actually working, and run the private Telegram setup
+  that has to exist before the hour starts. If you finish all of that and
   I do not yet have a talking bot, that is the correct outcome. Say so plainly rather
   than inventing more steps.
 
@@ -42,19 +42,18 @@ Create it if it is not there. Tell me the full path you are using.
 ## Step 3 - Download the pack
 
 Download this file into the workspace folder, keeping the name
-class-04-voice-pack-DRAFT.zip:
+class-04-voice-PRECLASS.zip:
 
-https://roughboy99.github.io/brain-class-04/downloads/class-04-voice-pack-DRAFT.zip
+https://roughboy99.github.io/brain-class-04/downloads/class-04-voice-PRECLASS.zip
 
 Mac / Linux / WSL:
-  curl -fL -o class-04-voice-pack-DRAFT.zip "<the URL above>"
+  curl -fL -o class-04-voice-PRECLASS.zip "<the URL above>"
 
 Windows PowerShell:
-  Invoke-WebRequest -Uri "<the URL above>" -OutFile class-04-voice-pack-DRAFT.zip
+  Invoke-WebRequest -Uri "<the URL above>" -OutFile class-04-voice-PRECLASS.zip
 
-The word DRAFT in that filename is deliberate and it is not a mistake. Explain to me
-what it means once you have read DRAFT.md in Step 6 - not before, because you do not
-know yet.
+The included workflow is labelled UNVERIFIED. Explain that status only after reading
+README.md and CLAIMS-AUDIT.md in Step 6.
 
 If the download fails, stop and show me the exact error. Do not carry on with a
 zero-byte file.
@@ -68,13 +67,15 @@ If that one fails, say so and carry on anyway - it is a convenience, not a depen
 
 ## Step 4 - Check I got the real file, not a broken or swapped one
 
-The file must have this SHA-256:
+Download the published checksum list first:
 
-  d451658da78bd5b3083bec38a8a0edc54019109af82e3867338d264c94cdb640
+  https://roughboy99.github.io/brain-class-04/downloads/SHA256SUMS
 
-Mac / Linux / WSL:   sha256sum class-04-voice-pack-DRAFT.zip
-Mac (if that is missing): shasum -a 256 class-04-voice-pack-DRAFT.zip
-Windows PowerShell:  Get-FileHash class-04-voice-pack-DRAFT.zip -Algorithm SHA256
+Then compare the `class-04-voice-PRECLASS.zip` entry with the local file:
+
+Mac / Linux / WSL:   sha256sum class-04-voice-PRECLASS.zip
+Mac (if that is missing): shasum -a 256 class-04-voice-PRECLASS.zip
+Windows PowerShell:  Get-FileHash class-04-voice-PRECLASS.zip -Algorithm SHA256
 
 Compare it yourself and tell me match or no match.
 
@@ -88,30 +89,21 @@ standing. Give it a destination on purpose, or it scatters README.md, prompts/ a
 docs/ loose into my workspace:
 
 Mac / Linux / WSL:
-  unzip -o class-04-voice-pack-DRAFT.zip -d class-04-voice-pack
+  unzip -o class-04-voice-PRECLASS.zip -d class-04-voice-pack
 
 Windows PowerShell:
-  Expand-Archive -Path class-04-voice-pack-DRAFT.zip -DestinationPath class-04-voice-pack -Force
+  Expand-Archive -Path class-04-voice-PRECLASS.zip -DestinationPath class-04-voice-pack -Force
 
 Use -o (and -Force) so that re-running never sits there waiting for me to answer an
 "overwrite?" prompt I cannot see.
 
 Then list what came out. From here on, "the pack folder" means class-04-voice-pack/.
 
-## Step 6 - Read DRAFT.md first, then the README
+## Step 6 - Read the README and claim audit
 
-Read class-04-voice-pack/DRAFT.md before anything else, and tell me in your own words:
-
-  - which single file is missing from this pack
-  - why it is missing
-  - which five files refer to it anyway
-  - what I should do instead when I hit one of those references
-
-Do not gloss over this. If I follow a prompt to a line that says "import
-demo/09-voice-ask.json" and there is no demo folder, I will think the download is
-broken. I want to already know it is not.
-
-Then read README.md, PREWORK.md and VERIFY.md all the way through.
+Read README.md and CLAIMS-AUDIT.md first. Tell me which claims are verified, why public
+HTTPS is mandatory, and why `workflow/09-voice-ask.UNVERIFIED.json` must remain inactive
+until the release gate passes. Then read PREWORK.md and VERIFY.md all the way through.
 
 ## Step 7 - Check the things Class 4 stands on, before touching anything
 
@@ -186,39 +178,25 @@ Tell me why step 3 has to happen NOW, before any workflow exists. Then wait for 
 Do not ask me to paste my bot token to you. You do not need it and it is a password.
 If I paste it anyway, tell me to send /revoke to @BotFather and get a new one.
 
-## Step 9 - The two environment variables, and the restart people forget
+## Step 9 - Private Telegram setup and public HTTPS
 
-This is the only part of Class 4 that is genuinely automatable, and it is the part that
-silently breaks the class when it is skipped.
+Telegram Trigger needs a public HTTPS URL that reaches this n8n instance. Localhost is
+not reachable by Telegram. Ask me to keep the slide deck on the shared screen and run,
+in an unshared terminal:
 
-Add these two lines to my stack's .env, next to where my other keys already live:
+  bash setup-telegram-private.sh --stack ~/brain
 
-  BRAIN_BOT_TOKEN=<the token BotFather gave me>
-  BRAIN_OWNER_ID=<my numeric chat id>
+The script reads the URL, token and owner ID with echo disabled, writes an ignored
+mode-600 private file, adds a Compose override, and recreates n8n. This is required
+because Class 2's Compose service does not inject arbitrary .env keys and a plain
+`docker compose restart` does not apply changed Compose configuration.
 
-Rules for this:
+Verify only with:
 
-  - APPEND. Never rewrite or overwrite that .env. It holds the key that decrypts my
-    saved n8n credentials, and replacing it locks me out of every credential I have.
-  - Check first whether either line is already there. If it is, leave it and tell me.
-  - I type the token in myself. You add the line, I fill the value, or I paste it
-    into the file directly. Do not echo it back to me on screen afterwards.
+  bash setup-telegram-private.sh --stack ~/brain --status
 
-Then RESTART the n8n container:
-
-  docker compose restart n8n
-
-Explain why, because this is the trap: n8n reads environment variables when the
-container starts and never again. Adding the line without restarting gives an empty
-token, and Telegram answers an empty token with 404 Not Found - which reads like a
-broken URL and is nothing of the kind.
-
-Verify it actually landed, without printing the value:
-
-  docker compose exec n8n printenv BRAIN_BOT_TOKEN | wc -c
-
-A number bigger than 40 is right. 0 or 1 means it is empty and the restart did not
-take effect.
+Never ask me to print either value. Paste the token from the clipboard into the n8n
+credential and clear it with `--clear-clipboard`.
 
 ## Step 10 - Know when we are actually finished
 
@@ -226,13 +204,13 @@ We are finished when ALL of these are true. Print them back to me as a checklist
 a real PASS or FAIL against each:
 
   - The pack is downloaded, the checksum matched, and it is unzipped
-  - I know what DRAFT.md says and why demo/09-voice-ask.json is absent
+  - I understand why the included workflow is labelled UNVERIFIED and inactive
   - My Class 3 Ask answers a real question AND refuses one it cannot answer
   - ffmpeg in the container has libopus
   - Both model slugs still exist
   - I have a Telegram bot, I have pressed Start, and I have my numeric chat id
-  - BRAIN_BOT_TOKEN and BRAIN_OWNER_ID are in .env and the container has been restarted
-  - printenv inside the container shows the token is non-empty
+  - A public HTTPS URL reaches this n8n instance
+  - Private setup reports the token and owner ID set without displaying values
 
 Then tell me, in two or three sentences: what I now have, what I do NOT yet have, and
 that the bot itself gets built in the hour from prompts/P1-ears.md, P2-ask.md and
@@ -240,14 +218,14 @@ P3-voice.md - in that order, each one ending somewhere I can see on my own phone
 
 Do not offer to build the workflow for me now. It is built in the class, on camera,
 and building it early against my real bot registers a webhook that makes getUpdates
-return 409 on that bot forever.
+return 409 while that bot's webhook is active. Removing the webhook restores polling.
 
 ## Ground rules for the whole job
 
 - Never claim something worked without output showing it worked.
 - Never skip the checksum.
 - Never write my bot token or my OpenRouter key into any file you create, and never
-  print either one to the screen. The token belongs in .env and in an n8n credential,
-  and nowhere else.
+  print either one to the screen. The token belongs in the ignored private env file and
+  an n8n credential, and nowhere else.
 - If you get stuck on the same thing twice, stop. Give me the exact command and the
   exact error, pasted, so I can post it in the community. Never post my token.

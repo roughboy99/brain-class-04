@@ -63,8 +63,8 @@ is the entire security model of this class, and you should know what it looks li
 > below this line matters until this passes.
 
 **If it refuses *you*:** `BRAIN_OWNER_ID` is empty inside the container. The guard is
-comparing your id against `''`. `docker compose exec n8n printenv BRAIN_OWNER_ID` — if
-that prints nothing, restart n8n.
+comparing your id against `''`. Run `setup-telegram-private.sh --status`; if it reports
+missing, rerun private setup so Compose recreates n8n.
 
 ---
 
@@ -153,8 +153,9 @@ the file size looks fine. Go to the table below.
 
 ## Reference numbers
 
-Measured on the live stack on 2026-08-25, running the real path. Yours should be in the
-same order of magnitude; if something is ten times off, that is the thing to look at.
+Measured on the live stack on 2026-08-25 for the processing path. Telegram transfer,
+webhook transit, phone playback and cold starts were outside this probe. Treat the values
+as observations, not an end-to-end promise.
 
 | Step | Measured |
 |---|---|
@@ -164,7 +165,7 @@ same order of magnitude; if something is ten times off, that is the thing to loo
 | SSE parsed | 22 `data:` lines → **9 audio frames** |
 | Reassembled PCM | 266,400 bytes = 5.55 s |
 | ffmpeg → ogg/opus | 22,297 bytes, 5.56 s, `exitCode 0`, empty stderr |
-| End to end inside n8n | **2 seconds** |
+| Processing-path observation in that probe | **about 2 seconds** |
 
 Your `Reassemble the audio` node reports `audioFrames`, `pcmBytes` and `seconds` for
 exactly this reason. **Zero frames means stop** — everything after it will build a

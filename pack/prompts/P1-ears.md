@@ -3,8 +3,9 @@
 **What it builds:** a Telegram bot that refuses strangers, takes a voice note from your
 phone, and repeats your own words back to you as text.
 
-**Before you run it:** `PREWORK.md` is done — bot created, `Start` pressed, chat id
-written down. Your Class 3 Ask tab answers questions.
+**Before you run it:** `PREWORK.md` and `N8N-TELEGRAM-FIRST.md` are done — bot created,
+private setup complete, Telegram Trigger already on the canvas, and the credential named
+`Brain Bot (Telegram)` has tested successfully. The workflow is still inactive.
 
 **Milestone:** you speak into your phone, and text comes back. That is already useful. If
 the rest of the hour goes badly, you still have this.
@@ -21,8 +22,10 @@ the rest of the hour goes badly, you still have this.
 I have n8n on port 5678, self-hosted in Docker, with ffmpeg available inside the
 container. I have a Telegram bot token and my own numeric chat id.
 
-Build an n8n workflow called `09 - Voice ask`. In this first pass it goes as far as
-transcribing a voice note and replying with the transcript as text. Shape:
+Continue my existing inactive n8n workflow called `09 - Voice ask`. It already contains
+a Telegram Trigger with Trigger On = Message and the tested credential
+`Brain Bot (Telegram)`. Do not create a second workflow or credential. In this first pass
+it goes as far as transcribing a voice note and replying with the transcript as text. Shape:
 
   Telegram Trigger -> Code (Is this you?) -> Telegram (download the voice note)
     -> Read/Write File (write) -> Execute Command (ffmpeg) -> Read/Write File (read)
@@ -32,8 +35,8 @@ transcribing a voice note and replying with the transcript as text. Shape:
 1. Telegram Trigger node:
    - Updates: `message` only. Not `*`. Every other update type produces executions
      that do nothing and make the execution list unreadable.
-   - Credential: create a new Telegram credential called `Brain Bot (Telegram)` and put
-     the token in it. Do NOT type the token into any node parameter.
+   - Reuse the existing `Brain Bot (Telegram)` credential. Do NOT type the token into
+     any node parameter and do not create a duplicate credential.
 
 2. Code node called `Is this you?`. This runs FIRST, before anything is downloaded.
    - Read the owner id from an environment variable, not from a literal:
@@ -114,8 +117,10 @@ transcribing a voice note and replying with the transcript as text. Shape:
     - For the text-message branch from step 2: "Send me a voice note and I'll answer
       out loud."
 
-Save it and activate it. A Telegram Trigger only registers its webhook with Telegram
-when the workflow is Active - inactive, your bot will appear completely dead.
+Save it. Before activation, confirm `Is this you?` is directly after Telegram Trigger,
+private setup `--status` passes, and n8n has the intended public HTTPS webhook URL. Then
+activate it. A Telegram Trigger only registers its webhook with Telegram when the
+workflow is Active - inactive, your bot will appear completely dead.
 
 Then tell me exactly what to send from my phone to test it, and what I should see in
 the execution list for each of: my own voice note, my own text message, and a message
@@ -124,32 +129,27 @@ from someone who is not me.
 
 ---
 
-## Before you run it: one line in your `.env`
+## Before you run it: private setup must be complete
 
 The guard reads your chat id from the environment so it never appears in an exported
-workflow. In your stack folder, add to `.env`:
+workflow. Run the pack's private setup in a terminal that is not being shared:
 
 ```bash
-BRAIN_OWNER_ID=123456789
+bash setup-telegram-private.sh --stack ~/brain
 ```
 
-Then **restart n8n**:
-
-```bash
-docker compose restart n8n
-```
-
-n8n reads environment variables when the container starts and never again. Add the line
-without restarting and `$env.BRAIN_OWNER_ID` is an empty string — at which point the
-guard compares your id against `''`, refuses **you**, and your bot looks broken.
+The script loads the value through a Compose override and recreates n8n. Appending a key
+to the Class 2 `.env` alone does not inject it into the service, and a plain Compose
+restart does not apply environment changes. If `$env.BRAIN_OWNER_ID` is empty, the guard
+compares your id against `''`, refuses **you**, and your bot looks broken.
 
 That failure is silent by design. Check it deliberately:
 
 ```bash
-docker compose exec n8n printenv BRAIN_OWNER_ID
+bash setup-telegram-private.sh --stack ~/brain --status
 ```
 
-If that prints nothing, the restart did not happen.
+If that reports missing, rerun private setup.
 
 ---
 
@@ -200,7 +200,7 @@ edges is the part you have to be able to trust.
 |---|---|
 | Nothing happens at all, and no execution appears | The workflow is **not Active**. The trigger's webhook is only registered on activation. |
 | `409 Conflict: can't use getUpdates` in a browser | Correct and expected once the trigger is live. Telegram will not deliver two ways at once. Your chat id comes from `PREWORK.md`, or from `@userinfobot`. |
-| The bot refuses **you** | `BRAIN_OWNER_ID` is empty in the container. `docker compose exec n8n printenv BRAIN_OWNER_ID` — if it is blank, restart n8n. |
+| The bot refuses **you** | `BRAIN_OWNER_ID` is empty in the container. Run private setup again and check `--status`. |
 | `401 Unauthorized` from Telegram | The **token** is wrong or was revoked. |
 | `404 Not Found` from Telegram | The **URL** is wrong, not the token — the token was never read. In n8n's own Telegram node this almost always means the credential is empty. |
 | Execute Command node: `command not found` | ffmpeg is not in your n8n image. Check with `docker compose exec n8n ffmpeg -version`. The starter pack's image includes it. |

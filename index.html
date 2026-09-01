@@ -266,15 +266,19 @@
 
     <p>Rather read it before you run it? <a href="install.txt">Here is the whole prompt</a>. Do that with anything you get off the internet — including from me.</p>
 
-    <a class="big" href="downloads/class-04-voice-pack-DRAFT.zip"><span class="go">↓</span>
-      <div class="t">class-04-voice-pack-DRAFT.zip</div>
-      <div class="d">The pack, if you would rather download it by hand · 42,227 bytes</div>
+    <a class="big" href="downloads/class-04-voice-PRECLASS.zip"><span class="go">↓</span>
+      <div class="t">class-04-voice-PRECLASS.zip</div>
+      <div class="d">Slides, notes, prompts, verifier and the inactive study workflow</div>
     </a>
     <p style="font-size:13.5px;color:var(--muted);margin-top:9px">Check you got the real file:
       <code>cd downloads &amp;&amp; sha256sum -c SHA256SUMS</code> — <a href="downloads/SHA256SUMS">SHA256SUMS</a></p>
     <a class="big" href="setup-gate.html"><span class="go">→</span>
       <div class="t">setup-gate.html</div>
       <div class="d">The browser steps no script can do for you — BotFather, your chat id, the credential</div>
+    </a>
+    <a class="big" href="downloads/class-04-telegram-integration.pptx"><span class="go">→</span>
+      <div class="t">Telegram teaching slides</div>
+      <div class="d">Mock BotFather and n8n screens; no real credential values</div>
     </a>
     <!-- Repo tree, not /pack/ on this site: Pages serves no directory index
          (that would 404), and GitHub renders the markdown properly. -->
@@ -284,9 +288,9 @@
     </a>
 
     <div class="warn">
-      <div class="warn-t">The word DRAFT in that filename is deliberate</div>
-      <p>One file is missing from the pack on purpose: <code>demo/09-voice-ask.json</code>, the finished workflow you would import if a build went sideways. It does not exist yet, because we build that workflow live today and no honest copy of it exists to ship. <strong>Five files in the pack refer to it anyway</strong> — <code>README.md</code>, all three prompts, and <code>BUILD-THE-BOT.md</code>. When you hit one of those lines, that is not a broken download.</p>
-      <p><code>BUILD-THE-BOT.md</code> walks the same workflow node by node and is complete. The export lands in an updated pack after class, on this same link.</p>
+      <div class="warn-t">The included workflow is deliberately labelled UNVERIFIED</div>
+      <p>The pre-class pack includes the generated 23-node workflow for study and inactive import. It has structural tests but has not passed the live Telegram release gate. Keep it inactive until the owner, voice, webhook and second-account tests pass.</p>
+      <p><code>CLAIMS-AUDIT.md</code> states exactly what was verified and what remains open.</p>
     </div>
   </section>
 
@@ -401,19 +405,20 @@ phone &lt;--voice note-- Telegram &lt;-- ffmpeg &lt;-- parse SSE &lt;----+</pre>
       <p>That has a useful consequence when something breaks today: <em>does your Ask tab still work?</em> If yes, the fault is in this class. If no, the fault is in Class 3. One question splits every problem in half in ten seconds.</p>
     </div>
 
-    <h3>Everything it needs, you already have</h3>
+    <h3>What is reused, and what must be ready</h3>
     <div class="tw">
       <table>
         <thead><tr><th>Piece</th><th>What it costs you</th></tr></thead>
         <tbody>
           <tr><td>Transcription</td><td>Your <strong>OpenRouter key from Class 1</strong>. No new credential.</td></tr>
           <tr><td>Speech</td><td>The same key.</td></tr>
-          <tr><td>Audio conversion</td><td><strong>ffmpeg is already inside your n8n container.</strong> Nothing to install.</td></tr>
+          <tr><td>Audio conversion</td><td>The verifier checks your moving n8n image for <strong>ffmpeg + libopus</strong>.</td></tr>
           <tr><td>Transport</td><td>A Telegram bot token. Free, two minutes, <strong>no card</strong>.</td></tr>
+          <tr><td>Webhook</td><td>A public HTTPS reverse proxy or tunnel that reaches this n8n instance.</td></tr>
         </tbody>
       </table>
     </div>
-    <p>One new signup, and it is the free kind.</p>
+    <p>The Telegram signup is free. Public HTTPS is separate infrastructure.</p>
   </section>
 
   <!-- ═══════════════════ PREWORK ═══════════════════ -->
@@ -452,35 +457,33 @@ phone &lt;--voice note-- Telegram &lt;-- ffmpeg &lt;-- parse SSE &lt;----+</pre>
       <p>Find <code>"chat":{"id":123456789,</code> — that number is yours. Write it down.</p>
       <div class="danger">
         <div class="danger-t">The trap · do this BEFORE any workflow exists</div>
-        <p>The moment n8n's Telegram Trigger goes active it registers a <strong>webhook</strong> on your bot, and from that second <code>getUpdates</code> stops working forever:</p>
+        <p>The moment n8n's Telegram Trigger goes active it registers a <strong>webhook</strong> on your bot. While that webhook is active, <code>getUpdates</code> returns:</p>
         <pre style="margin-top:8px">409  Conflict: can't use getUpdates method while webhook is active</pre>
-        <p style="margin-top:8px">That is not a broken bot and not a broken token — Telegram will not deliver messages two ways at once. Already hit it? Message <strong>@userinfobot</strong>, which replies with your numeric id and never touches your bot. Or read it off the first execution in n8n.</p>
+        <p style="margin-top:8px">That is not a broken bot and not a broken token — Telegram will not deliver messages two ways at once. Deactivate the trigger or call <code>deleteWebhook</code> to restore polling. You can also get your id from <strong>@userinfobot</strong> or the first n8n execution.</p>
       </div>
     </div>
 
     <div class="step">
-      <div class="step-head"><div class="step-num">4</div><div class="step-title">Two lines in <code>.env</code>, then restart</div></div>
-      <p>Add these to your stack's <code>.env</code>, next to your other keys:</p>
+      <div class="step-head"><div class="step-num">4</div><div class="step-title">Private setup, off camera</div></div>
+      <p>Telegram cannot call <code>localhost</code>. Have a public HTTPS URL that reaches your n8n instance, keep the slide deck on the shared screen, and run this in an unshared terminal:</p>
       <div class="code">
-        <div class="code-label">append to .env — never overwrite it</div>
+        <div class="code-label">hidden input; values are never printed</div>
         <button class="cp" type="button">copy</button>
-<pre>BRAIN_BOT_TOKEN=your-token-from-botfather
-BRAIN_OWNER_ID=your-numeric-chat-id</pre>
+<pre>bash setup-telegram-private.sh --stack ~/brain</pre>
       </div>
       <div class="danger">
-        <div class="danger-t">Append. Never rewrite that file.</div>
-        <p><code>.env</code> holds the key that decrypts your saved n8n credentials. Replacing it locks you out of every credential you have saved.</p>
+        <div class="danger-t">Why the script is required</div>
+        <p>The Class 2 service does not inject arbitrary <code>.env</code> keys into n8n, and <code>docker compose restart</code> does not apply changed Compose configuration. The script adds an ignored private env file and an override, then recreates n8n without replacing your encryption key.</p>
       </div>
-      <p>Then restart the container — and this is the step that quietly ruins the hour when it is skipped:</p>
+      <p>Check set/missing state and character counts without displaying either secret:</p>
       <div class="code">
         <div class="code-label">terminal</div>
         <button class="cp" type="button">copy</button>
-<pre>docker compose restart n8n</pre>
+<pre>bash setup-telegram-private.sh --stack ~/brain --status</pre>
       </div>
       <div class="warn">
-        <div class="warn-t">Why the restart is not optional</div>
-        <p><strong>n8n reads environment variables when the container starts and never again.</strong> Add the line without restarting and you get an empty token — and Telegram answers an empty token with <code>404 Not Found</code>, which reads like a broken URL and is nothing of the kind.</p>
-        <p>Check it landed without printing the value: <code>docker compose exec n8n printenv BRAIN_BOT_TOKEN | wc -c</code> — bigger than 40 is right, <code>0</code> or <code>1</code> means the restart did not take.</p>
+        <div class="warn-t">The clipboard stays private too</div>
+        <p>The script copies the token without displaying it. Paste it into the n8n credential, save, then run <code>--clear-clipboard</code>. If it ever appears in a recording or chat, revoke it with BotFather and replace it.</p>
       </div>
     </div>
 
@@ -491,7 +494,8 @@ BRAIN_OWNER_ID=your-numeric-chat-id</pre>
       <li><input type="checkbox" id="k3"><label for="k3">Your numeric chat id written down</label></li>
       <li><input type="checkbox" id="k4"><label for="k4">Class 3's Ask tab answering questions about your documents</label></li>
       <li><input type="checkbox" id="k5"><label for="k5">Class 3's Ask tab <strong>refusing</strong> one it cannot answer</label></li>
-      <li><input type="checkbox" id="k6"><label for="k6"><code>BRAIN_BOT_TOKEN</code> and <code>BRAIN_OWNER_ID</code> in <code>.env</code>, container restarted</label></li>
+      <li><input type="checkbox" id="k6"><label for="k6">Public HTTPS ready; private setup reports token, owner ID and webhook URL set</label></li>
+      <li><input type="checkbox" id="k6b"><label for="k6b">n8n credential <code>Brain Bot (Telegram)</code> saved and tested green; the <code>09 - Voice ask</code> workflow has one Telegram Trigger and is <strong>inactive</strong> (<code>N8N-TELEGRAM-FIRST.md</code> in the pack)</label></li>
       <li><input type="checkbox" id="k7"><label for="k7">Telegram on your phone, signed in</label></li>
       <li><input type="checkbox" id="k8"><label for="k8"><strong>One question you actually want to ask your documents out loud</strong></label></li>
     </ul>
@@ -500,11 +504,17 @@ BRAIN_OWNER_ID=your-numeric-chat-id</pre>
 
   <!-- ═══════════════════ P1 ═══════════════════ -->
   <section class="section" id="p1">
-    <h2>The build — three prompts</h2>
+    <h2>The build — Step 0, then three prompts</h2>
     <p>Each prompt ends at a milestone you can see on your own phone. <strong>If you drop out at any of the three, you still have something that works.</strong> That split is deliberate: voice in / text out is already useful, and it is reached before any of the streaming machinery exists.</p>
 
+    <div class="step">
+      <div class="step-head"><div class="step-num">0</div><div class="step-title">The credential, in n8n</div><div class="step-time">0:11 – 0:16</div></div>
+      <p>Before any audio or AI: a workflow named <code>09 - Voice ask</code>, one <strong>Telegram Trigger</strong> (Trigger On: Message), and a credential named exactly <code>Brain Bot (Telegram)</code> created from inside it. The token goes into the <strong>Access Token</strong> field, which shows dots while you paste. Save, watch for the green <em>Connection tested successfully</em>, close the panel, clear the clipboard. <strong>Leave the workflow switched off</strong> — the owner guard does not exist yet.</p>
+      <p>Do it before class from <code>N8N-TELEGRAM-FIRST.md</code> in the pack. It is also the first thing built live in the hour, with n8n on the shared screen, so anyone who arrives without it catches up here. The token lives in the credential and never in a node: an exported workflow carries the name, not one character of the value.</p>
+    </div>
+
     <div class="step hero-step">
-      <div class="step-head"><div class="step-num">P1</div><div class="step-title">Ears</div><div class="step-time">0:13 – 0:25</div></div>
+      <div class="step-head"><div class="step-num">P1</div><div class="step-title">Ears</div><div class="step-time">0:16 – 0:27</div></div>
       <p>Trigger, owner guard, download the file, convert ogg → mp3, transcribe.</p>
       <p>Open <code>prompts/P1-ears.md</code> from the pack and paste it into Claude Code.</p>
       <div class="warn">
@@ -522,7 +532,7 @@ BRAIN_OWNER_ID=your-numeric-chat-id</pre>
   <section class="section" id="guard">
     <h2>The guard — the part that can hurt you</h2>
     <div class="step">
-      <div class="step-head"><div class="step-num gold">!</div><div class="step-title">Watch it refuse a stranger</div><div class="step-time">0:25 – 0:31</div></div>
+      <div class="step-head"><div class="step-num gold">!</div><div class="step-title">Watch it refuse a stranger</div><div class="step-time">0:27 – 0:33</div></div>
 
       <div class="danger">
         <div class="danger-t">Read this even if you skip everything else</div>
@@ -551,7 +561,7 @@ BRAIN_OWNER_ID=your-numeric-chat-id</pre>
     <h2>P2 &amp; P3 — the answer, then the voice</h2>
 
     <div class="step hero-step">
-      <div class="step-head"><div class="step-num">P2</div><div class="step-title">Ask</div><div class="step-time">0:31 – 0:38</div></div>
+      <div class="step-head"><div class="step-num">P2</div><div class="step-title">Ask</div><div class="step-time">0:33 – 0:40</div></div>
       <p>Hand the transcript to your Class 3 <code>/ask</code> webhook. Unchanged, untouched, called over HTTP exactly as your dashboard calls it.</p>
       <div class="ms">
         <div class="ms-t">Milestone — check your phone</div>
@@ -560,7 +570,7 @@ BRAIN_OWNER_ID=your-numeric-chat-id</pre>
     </div>
 
     <div class="step hero-step" id="p3">
-      <div class="step-head"><div class="step-num">P3</div><div class="step-title">Voice</div><div class="step-time">0:38 – 0:50</div></div>
+      <div class="step-head"><div class="step-num">P3</div><div class="step-title">Voice</div><div class="step-time">0:40 – 0:50</div></div>
       <p>Speak the answer, convert it, send it back as a real voice note. Both traps live in this prompt.</p>
 
       <div class="danger">

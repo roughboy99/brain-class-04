@@ -109,15 +109,15 @@ fi
 head_ "Part 4 - the two environment variables"
 
 # Set is not the same as visible to a node, and neither is the same as non-empty.
-# n8n reads the environment when the container STARTS. Editing .env without a restart
-# leaves these blank, and the failure downstream looks like a broken URL.
+# The Class 4 Compose override injects these when the container is created. A plain
+# restart does not apply changed Compose configuration.
 if [ -n "$N8N" ]; then
   for var in BRAIN_BOT_TOKEN BRAIN_OWNER_ID; do
     VAL="$(docker exec "$N8N" printenv "$var" 2>/dev/null | tr -d '\r\n')"
     if [ -n "$VAL" ]; then
       ok "$var" "set, ${#VAL} characters (value not shown)"
     else
-      bad "$var" "empty in the container - add it to .env and RESTART n8n"
+      bad "$var" "empty in the container - rerun setup-telegram-private.sh"
     fi
   done
 
@@ -125,6 +125,15 @@ if [ -n "$N8N" ]; then
   case "$BLOCK" in
     false|"") ok "env access in nodes" "allowed${BLOCK:+ (explicitly false)}" ;;
     *)        bad "env access in nodes" "N8N_BLOCK_ENV_ACCESS_IN_NODE=$BLOCK - sendVoice cannot read the token" ;;
+  esac
+
+  WEBHOOK_URL="$(docker exec "$N8N" printenv N8N_WEBHOOK_URL 2>/dev/null | tr -d '\r\n')"
+  case "$WEBHOOK_URL" in
+    https://localhost/*|https://127.*|http://*|"")
+      bad "public webhook URL" "missing or not public HTTPS - Telegram cannot reach localhost"
+      ;;
+    https://*.*/*) ok "public webhook URL" "set (hostname hidden)" ;;
+    *) bad "public webhook URL" "not a valid public HTTPS base URL" ;;
   esac
 else
   warn "environment" "skipped - no n8n container"
@@ -160,11 +169,11 @@ elif [ -n "$N8N" ]; then
     if (!t) { console.log("NOTOKEN"); process.exit(0); }
     fetch("https://api.telegram.org/bot" + t + "/getMe")
       .then(r => r.json())
-      .then(j => console.log(j.ok ? "OK @" + j.result.username : "ERR " + j.error_code + " " + j.description))
+      .then(j => console.log(j.ok ? "OK" : "ERR " + j.error_code + " " + j.description))
       .catch(e => console.log("ERR " + e.message));
   ' 2>/dev/null | tr -d '\r')"
   case "$BOT" in
-    OK*)      ok "telegram getMe" "${BOT#OK }" ;;
+    OK)       ok "telegram getMe" "token accepted (bot identity hidden)" ;;
     NOTOKEN)  bad "telegram getMe" "no token in the container - see Part 4" ;;
     "ERR 401"*) bad "telegram getMe" "401 - the TOKEN is wrong or was revoked" ;;
     "ERR 404"*) bad "telegram getMe" "404 - the URL is wrong, not the token" ;;

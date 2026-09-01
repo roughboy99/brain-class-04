@@ -14,9 +14,9 @@ debugging under time pressure.
 ## Why it is not here
 
 The workflow is built live, in the hour, with you. Exporting a copy in advance means
-building it first against a throwaway bot -- because the moment an n8n Telegram Trigger
-goes active it registers a webhook, and `getUpdates` on that bot returns `409` forever
-afterwards. That has not been done yet, so no honest copy of it exists to ship.
+building it first against a throwaway bot. While an n8n Telegram Trigger webhook is
+active, `getUpdates` returns `409`; removing the webhook restores polling. That live
+end-to-end run has not been done yet, so no honest finished copy exists to ship.
 
 Shipping the pack without it, clearly labelled, beats shipping a workflow nobody has run.
 

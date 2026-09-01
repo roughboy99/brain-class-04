@@ -105,15 +105,17 @@ Find `"chat":{"id":123456789,` — that number is yours. Write it down.
 
 > ### The trap: do this before you build the workflow
 >
-> Once n8n's Telegram Trigger is active, it registers a **webhook** on your bot, and from
-> that moment `getUpdates` stops working forever:
+> Once n8n's Telegram Trigger is active, it registers a **webhook** on your bot. While
+> that webhook is active, `getUpdates` returns:
 >
 > ```
 > 409  Conflict: can't use getUpdates method while webhook is active
 > ```
 >
 > This is not a broken bot and not a broken token. Telegram simply will not deliver
-> messages two ways at once. If you already hit it, you have two options: message
+> messages two ways at once. Deactivating the trigger normally removes its webhook;
+> Telegram's `deleteWebhook` method removes it explicitly and restores `getUpdates`.
+> If you hit the conflict while finding your id, you can also message
 > **@userinfobot**, which just replies with your numeric id and never touches your bot; or
 > read the id off the first execution in n8n once the workflow runs.
 >
@@ -139,6 +141,25 @@ and a public leak.
 
 We will build that check together and I will show you what it looks like when it refuses.
 
+---
+
+## Step 5 — Have a public HTTPS URL for n8n
+
+Telegram cannot send a webhook to `http://localhost:5678`. Your n8n instance must already
+be reachable through a public HTTPS reverse proxy or tunnel, and that URL must reach this
+same n8n container. The private setup script refuses localhost so this cannot fail later
+as a mysterious Telegram Trigger error.
+
+Keep your presentation on the slide deck and run this in a terminal that is not shared:
+
+```bash
+bash setup-telegram-private.sh --stack ~/brain
+```
+
+The URL, token and owner ID are entered with echo disabled. The script injects the two
+private values through a Compose override and recreates n8n; merely appending them to the
+Class 2 `.env` would not put them in the container.
+
 If you would rather not put business documents behind a public username at all, that is a
 completely reasonable position and there is a path for you: `docs/UPGRADE-mic.md` in the
 pack does the same thing through your dashboard instead. It needs HTTPS and it is more
@@ -146,11 +167,31 @@ work. Bring the question to the hour.
 
 ---
 
+## Step 6 — Put the token into n8n now, as a credential
+
+Five minutes, and it is the first thing built live at the top of the hour, so doing it now
+means you watch a rerun instead of catching up. `N8N-TELEGRAM-FIRST.md` in the pack has
+every click; video 0 in the pinned post shows them on a throwaway bot.
+
+The short version: create a workflow named `09 - Voice ask`, add a **Telegram Trigger**
+with Trigger On = **Message**, and from inside it create a credential named exactly
+**`Brain Bot (Telegram)`**. The token goes into the **Access Token** field, which shows dots
+while you paste. Save, watch for the green *Connection tested successfully*, close the
+panel, clear the clipboard. **Leave the workflow switched off** — the owner guard does not
+exist yet, and an active trigger is a public webhook.
+
+The token lives in the credential, never in a node. An exported workflow carries the
+credential's name and not one character of its value.
+
 ## What to have ready on the day
 
 - [ ] Bot created, token saved somewhere safe
 - [ ] You pressed **Start** and sent it a message
 - [ ] Your chat id written down
+- [ ] A public HTTPS URL reaches your n8n instance
+- [ ] `setup-telegram-private.sh --status` reports all values set without displaying them
+- [ ] n8n credential `Brain Bot (Telegram)` saved and tested green, from `N8N-TELEGRAM-FIRST.md`
+- [ ] The `09 - Voice ask` workflow exists with one Telegram Trigger and is **inactive**
 - [ ] Class 3's Ask tab answering questions
 - [ ] Telegram on your phone, signed in
 - [ ] One question you actually want to ask your documents out loud

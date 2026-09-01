@@ -38,7 +38,13 @@ Insert between `Read the transcript` and the Telegram send:
 
 2. HTTP Request node `Ask the brain`:
    - POST http://localhost:5678/webhook/ask
-   - Body: { "question": "<the transcript>" }
+   - JSON body:
+     {
+       "question": {{ JSON.stringify(String($json.transcript ?? '')) }}
+     }
+     Do not put quotes around the expression. `JSON.stringify` supplies the quotes and
+     safely escapes spoken quotation marks, newlines and backslashes. Raw interpolation
+     breaks the request as soon as a transcript contains one of those characters.
    - Timeout 60000.
    - No credential. This is your own stack talking to itself.
 
