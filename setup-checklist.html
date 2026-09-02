@@ -52,9 +52,12 @@ shasum -a 256 class-04-voice-PRECLASS.zip</pre>
 
 <section class="step"><h2>7. Prove Class 3 is healthy</h2>
 <p>Start the stack, then ask it one question it can answer and one it cannot:</p>
-<pre class="cmd">cd ~/brain &amp;&amp; bash brain-up.sh
+<pre class="cmd">cd ~/brain &amp;&amp; docker compose up -d
+until curl -fsS http://localhost:5678/healthz; do sleep 5; done
+docker compose ps
 curl -s -X POST http://localhost:5678/webhook/ask -H 'Content-Type: application/json' -d '{"question":"How much is the security deposit on the warehouse?"}'
 curl -s -X POST http://localhost:5678/webhook/ask -H 'Content-Type: application/json' -d '{"question":"What is my employee health plan copay?"}'</pre>
+<p>n8n takes 25 to 90 seconds from cold; the loop waits for it. If Docker says permission denied, prefix the docker commands with <code>sudo</code>. There is no <code>brain-up.sh</code> in a student stack: that file is an instructor helper.</p>
 <p>The first must cite a source. The second must return <code>answered: false</code> with no sources. Then run the pack's checker from anywhere:</p>
 <pre class="cmd">bash ~/class-04/class-04-voice-pack/verify.sh</pre>
 <p>Right now Parts 1, 2, 3 and 5 must pass (stack, Class 3 answer and refusal, ffmpeg with libopus, both models). Parts 4 and 6 will fail until step 11. That is expected at this stage.</p>
