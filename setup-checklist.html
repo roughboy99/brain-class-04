@@ -1,0 +1,119 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Class 4 Student Setup</title>
+<style>:root{--ink:#17212a;--paper:#f7f3eb;--good:#19704f}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 Georgia,serif}header{background:var(--ink);color:#fff;padding:28px max(18px,calc((100% - 900px)/2))}h1,h2,h3,label,button{font-family:Arial,sans-serif}h1{margin:0}h3{margin:14px 0 4px;font-size:15px}.progress{position:sticky;top:0;background:#fff;padding:10px max(18px,calc((100% - 900px)/2));border-bottom:1px solid #d8d0c1;z-index:2;font:14px Arial}.track{height:9px;background:#ddd;margin-top:7px}.track i{display:block;height:100%;width:0;background:var(--good);transition:.2s}main{max-width:900px;margin:auto;padding:22px 18px 70px}.intro,.danger,.note{padding:12px 15px;border-left:5px solid #8b5b00;background:#fff0d8;margin:10px 0}.note{border-color:var(--good);background:#edf5ef}.step{background:#fffdf8;border:1px solid #d8d0c1;margin:16px 0;padding:17px}.step.done{border-color:var(--good);background:#f3fbf6}.step.locked{opacity:.42;pointer-events:none}.step h2{margin:0 0 8px;font-size:20px}.cmd{background:#17212a;color:#f5f5f5;padding:12px;overflow:auto;white-space:pre-wrap;font:13px/1.45 Consolas,monospace;margin:8px 0}.check{display:block;font-weight:bold;margin-top:13px}button{padding:8px 12px;background:#b64826;color:#fff;border:0;cursor:pointer}code{background:#eee9df;padding:1px 4px}ul,ol{margin:6px 0 6px 20px}@media print{.progress,button{display:none}.step.locked{opacity:1}}</style></head><body>
+<header><h1>Class 4: Ears and a Voice</h1><p>Private setup before the hour. Progress is saved in this browser only.</p></header>
+<div class="progress"><b id="status">Step 1 of 12</b><div class="track"><i id="fill"></i></div></div>
+<main>
+<div class="intro"><b>This prepares your system; it does not build the talking bot.</b> The bot is built in class from P1, P2 and P3. Never paste your bot token, OpenRouter key or chat ID into community chat.</div>
+
+<section class="step"><h2>1. Check your computer</h2>
+<p>Start Docker Desktop. Your Class 3 stack must exist at <code>~/brain</code> and answer questions from the dashboard's Ask tab.</p>
+<h3>Windows</h3><p>Open PowerShell and confirm WSL is installed:</p><pre class="cmd">wsl -l -v</pre>
+<div class="note"><b>Windows rule for every step below:</b> your stack lives inside WSL, so open the WSL (Ubuntu/Debian) terminal and use the <b>Mac/Linux/WSL</b> commands. The PowerShell variants are only for people whose stack runs natively on Windows.</div>
+<label class="check"><input type="checkbox"> Docker is running and my Class 3 stack is at ~/brain</label></section>
+
+<section class="step"><h2>2. Fastest path: let Claude Code do steps 3 to 9 with you</h2>
+<p>This is the same installer the front door publishes. Run it in a folder you do not mind it writing to. It stops before building the bot, on purpose.</p>
+<h3>Mac / Linux / WSL</h3><pre class="cmd">curl -fsSL -o install.txt https://roughboy99.github.io/brain-class-04/install.txt &amp;&amp; claude "Read install.txt in this folder and follow it exactly, from the top."</pre>
+<h3>Windows PowerShell (native stack only)</h3><pre class="cmd">Invoke-WebRequest -Uri "https://roughboy99.github.io/brain-class-04/install.txt" -OutFile install.txt; claude "Read install.txt in this folder and follow it exactly, from the top."</pre>
+<p>Prefer to do it by hand, or want to check what it did? Every command it runs is below. Either way, tick this and continue.</p>
+<label class="check"><input type="checkbox"> I ran the one command, or I am doing the steps by hand</label></section>
+
+<section class="step"><h2>3. Make a workspace</h2>
+<h3>Mac / Linux / WSL</h3><pre class="cmd">mkdir -p ~/class-04 &amp;&amp; cd ~/class-04</pre>
+<h3>Windows PowerShell</h3><pre class="cmd">New-Item -ItemType Directory -Force "$env:USERPROFILE\class-04"; Set-Location "$env:USERPROFILE\class-04"</pre>
+<label class="check"><input type="checkbox"> I am in my class-04 workspace</label></section>
+
+<section class="step"><h2>4. Download the pack, the checksum list and the browser gate</h2>
+<h3>Mac / Linux / WSL</h3><pre class="cmd">curl -fL -o class-04-voice-PRECLASS.zip "https://roughboy99.github.io/brain-class-04/downloads/class-04-voice-PRECLASS.zip"
+curl -fL -o SHA256SUMS "https://roughboy99.github.io/brain-class-04/downloads/SHA256SUMS"
+curl -fL -o setup-gate.html "https://roughboy99.github.io/brain-class-04/setup-gate.html"</pre>
+<h3>Windows PowerShell</h3><pre class="cmd">Invoke-WebRequest -Uri "https://roughboy99.github.io/brain-class-04/downloads/class-04-voice-PRECLASS.zip" -OutFile class-04-voice-PRECLASS.zip
+Invoke-WebRequest -Uri "https://roughboy99.github.io/brain-class-04/downloads/SHA256SUMS" -OutFile SHA256SUMS
+Invoke-WebRequest -Uri "https://roughboy99.github.io/brain-class-04/setup-gate.html" -OutFile setup-gate.html</pre>
+<label class="check"><input type="checkbox"> All three files downloaded and the zip is not empty</label></section>
+
+<section class="step"><h2>5. Verify the checksum</h2>
+<p>Print the published hash and your file's hash, then compare them yourself:</p>
+<h3>Mac / Linux / WSL</h3><pre class="cmd">grep PRECLASS SHA256SUMS
+sha256sum class-04-voice-PRECLASS.zip
+# Mac without sha256sum:
+shasum -a 256 class-04-voice-PRECLASS.zip</pre>
+<h3>Windows PowerShell</h3><pre class="cmd">Select-String PRECLASS SHA256SUMS
+(Get-FileHash class-04-voice-PRECLASS.zip -Algorithm SHA256).Hash.ToLower()</pre>
+<div class="danger">No match? Stop, delete the zip, download again. Do not unzip it.</div>
+<label class="check"><input type="checkbox"> My checksum matches the published one</label></section>
+
+<section class="step"><h2>6. Unzip into its own folder</h2>
+<p>The zip unpacks flat, so give it a destination or it scatters files across your workspace.</p>
+<h3>Mac / Linux / WSL</h3><pre class="cmd">unzip -o class-04-voice-PRECLASS.zip -d class-04-voice-pack</pre>
+<h3>Windows PowerShell</h3><pre class="cmd">Expand-Archive -Path class-04-voice-PRECLASS.zip -DestinationPath class-04-voice-pack -Force</pre>
+<p>Read <code>MISSING-FILES.md</code>, <code>README.md</code>, <code>CLAIMS-AUDIT.md</code>, <code>PREWORK.md</code> and <code>VERIFY.md</code>. The included <code>workflow/09-voice-ask.UNVERIFIED.json</code> is study material: leave it inactive.</p>
+<label class="check"><input type="checkbox"> I unpacked the pack and read the safety notes</label></section>
+
+<section class="step"><h2>7. Prove Class 3 is healthy</h2>
+<p>Start the stack, then ask it one question it can answer and one it cannot:</p>
+<pre class="cmd">cd ~/brain &amp;&amp; bash brain-up.sh
+curl -s -X POST http://localhost:5678/webhook/ask -H 'Content-Type: application/json' -d '{"question":"How much is the security deposit on the warehouse?"}'
+curl -s -X POST http://localhost:5678/webhook/ask -H 'Content-Type: application/json' -d '{"question":"What is my employee health plan copay?"}'</pre>
+<p>The first must cite a source. The second must return <code>answered: false</code> with no sources. Then run the pack's checker from anywhere:</p>
+<pre class="cmd">bash ~/class-04/class-04-voice-pack/verify.sh</pre>
+<p>Right now Parts 1, 2, 3 and 5 must pass (stack, Class 3 answer and refusal, ffmpeg with libopus, both models). Parts 4 and 6 will fail until step 11. That is expected at this stage.</p>
+<div class="danger">If Class 3 invents an out-of-scope answer, stop. Class 4 would speak the same wrong answer out loud.</div>
+<label class="check"><input type="checkbox"> Class 3 answers and refuses; verify.sh Parts 1, 2, 3 and 5 pass</label></section>
+
+<section class="step"><h2>8. Create a separate Telegram bot</h2>
+<p>In Telegram open <b>@BotFather</b> (blue check), press Start, then send these one at a time:</p>
+<pre class="cmd">/newbot
+My Brain
+yourname_brain_bot</pre>
+<p>The second line is the display name, the third the username: it must be unique and end in <code>bot</code>. Copy the token into a password manager only. Do not reuse Content Mate's bot: one bot can have only one webhook. Optional hardening: <code>/setjoingroups</code> then Disable, <code>/setprivacy</code> then Enable.</p>
+<div class="danger">The token is a password: never post it, screenshot it, or type it into a workflow node.</div>
+<label class="check"><input type="checkbox"> My new Brain bot exists and its token is private</label></section>
+
+<section class="step"><h2>9. Start it, then get your chat ID</h2>
+<p>On the phone you will use in class, open your bot, press Start and send it <code>hello</code>. Then, in a private browser tab, open this with your token filled in:</p>
+<pre class="cmd">https://api.telegram.org/bot&lt;MY_TOKEN&gt;/getUpdates</pre>
+<p>Find <code>"chat":{"id":123456789</code> and write the number down privately. Do this <b>now</b>: once a webhook is active, getUpdates correctly returns 409 and this page stops working.</p>
+<label class="check"><input type="checkbox"> I saved my numeric chat ID</label></section>
+
+<section class="step"><h2>10. Get a public HTTPS URL for n8n</h2>
+<p>Telegram cannot call <code>localhost</code>. It needs a public HTTPS address that reaches your n8n on port 5678. If you already run n8n behind a domain and reverse proxy, use that URL and skip to step 11. Otherwise use a free Cloudflare quick tunnel: no account, no card.</p>
+<h3>Install cloudflared once</h3>
+<pre class="cmd">Windows PowerShell:
+winget install --id Cloudflare.cloudflared --exact
+
+Mac:
+brew install cloudflared
+
+Linux / WSL (Debian or Ubuntu):
+curl -fL -o cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb &amp;&amp; sudo dpkg -i cloudflared.deb</pre>
+<h3>Open the tunnel in its own terminal and leave it running</h3>
+<pre class="cmd">cloudflared tunnel --url http://localhost:5678</pre>
+<p>After a few seconds it prints a line like <code>https://random-words.trycloudflare.com</code>. That is your public URL. Check it from any browser: <code>https://random-words.trycloudflare.com/healthz</code> must show <code>{"status":"ok"}</code>.</p>
+<div class="danger"><b>The quick-tunnel URL changes every time you restart cloudflared.</b> Keep that terminal open through the class. If it restarts, rerun step 11 with the new URL and re-activate the workflow in n8n.</div>
+<div class="note">Windows with Docker Desktop: the tunnel can run in PowerShell or inside WSL; both reach localhost:5678.</div>
+<label class="check"><input type="checkbox"> My public HTTPS URL shows {"status":"ok"} at /healthz</label></section>
+
+<section class="step"><h2>11. Private setup, then the n8n credential</h2>
+<p>In a terminal that is <b>not</b> being shared or recorded. The script asks for the public URL, the token and your chat ID with typing hidden, writes a mode-600 private file in the stack, adds a Compose override and recreates n8n. A normal restart is not enough.</p>
+<pre class="cmd">bash ~/class-04/class-04-voice-pack/setup-telegram-private.sh --stack ~/brain
+bash ~/class-04/class-04-voice-pack/setup-telegram-private.sh --stack ~/brain --status</pre>
+<p>Status must show the token and owner ID set (character counts only) and the public URL set. Now put the token into n8n as a credential:</p>
+<ol><li>Open <code>http://localhost:5678</code>, Create Workflow, name it <b>09 - Voice ask</b>.</li>
+<li>Add a <b>Telegram Trigger</b>, Trigger On: <b>Message</b>.</li>
+<li>Credential: Create New, name it exactly <b>Brain Bot (Telegram)</b>.</li>
+<li>Copy the token to the clipboard without showing it, paste into the masked Access Token field, Save, wait for the green "Connection tested successfully", then clear the clipboard:</li></ol>
+<pre class="cmd">bash ~/class-04/class-04-voice-pack/setup-telegram-private.sh --stack ~/brain --copy-token
+bash ~/class-04/class-04-voice-pack/setup-telegram-private.sh --stack ~/brain --clear-clipboard</pre>
+<p>Save the workflow and leave it <b>Inactive</b>. Never click the eye/reveal icon. Finally run the checker again; every part must pass now:</p>
+<pre class="cmd">bash ~/class-04/class-04-voice-pack/verify.sh</pre>
+<label class="check"><input type="checkbox"> --status shows everything set, the credential tested green, verify.sh is all PASS</label></section>
+
+<section class="step"><h2>12. Ready for class</h2>
+<p>You have a checked pack, a healthy Class 3, audio support, a separate Telegram bot, your chat ID, a public HTTPS URL, private setup and a tested credential. You do <b>not</b> have a talking bot yet, and that is correct. In class: P1 voice to text; P2 grounded answer; P3 spoken reply.</p>
+<div class="note">If a token ever shows on screen or in a chat: BotFather <code>/revoke</code>, rerun step 11, replace the n8n credential. Post the exact error text to the community, never the token.</div>
+<label class="check"><input type="checkbox"> I am ready and will keep the workflow inactive until class</label></section>
+
+<button id="reset">Reset this browser's progress</button>
+</main>
+<script>const k='c4-student-v2',s=[...document.querySelectorAll('.step')],c=[...document.querySelectorAll('input')],st=document.querySelector('#status'),f=document.querySelector('#fill');let a=[];try{a=JSON.parse(localStorage.getItem(k)||'[]')}catch(e){}function p(){c.forEach((x,i)=>{x.checked=!!a[i];s[i].classList.toggle('done',!!a[i]);s[i].classList.toggle('locked',i>0&&!a[i-1])});let n=a.filter(Boolean).length;st.textContent=n===c.length?'All 12 complete':'Step '+Math.min(n+1,c.length)+' of 12';f.style.width=n/c.length*100+'%'}c.forEach((x,i)=>x.onchange=()=>{if(x.checked)a[i]=true;else a=a.slice(0,i);try{localStorage.setItem(k,JSON.stringify(a))}catch(e){}p()});document.querySelector('#reset').onclick=()=>{if(confirm('Reset progress?')){a=[];try{localStorage.removeItem(k)}catch(e){}p()}};p()</script></body></html>

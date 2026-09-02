@@ -1,0 +1,728 @@
+{
+  "name": "09 - Voice ask",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "id": "c4-trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -1120,
+        0
+      ],
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "Brain Bot (Telegram)"
+        }
+      },
+      "notes": "Trigger On is 'message' ONLY, not '*'. Every other update type produces executions that do nothing and make the list unreadable.\n\nAdditional Fields > Restrict to Chat IDs would filter here too, but it hardcodes your chat id into a file you are going to share. The guard node reads it from the environment instead. See BUILD-THE-BOT.md section 11.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-guard",
+      "name": "Is this you?",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// THE GUARD. This runs before anything is downloaded, transcribed or answered.\n//\n// Your bot's username is public and searchable. This node is the only thing standing\n// between a stranger and a brain that has read your lease and your invoices.\n//\n// The owner id is read from the environment, never written here: this workflow gets\n// exported and shared, and a chat id identifies a real person's Telegram account.\nconst owner = String($env.BRAIN_OWNER_ID || '').trim();\n\nif (!owner) {\n  // Fail CLOSED. An empty variable must never mean \"let everyone in\".\n  // If you are seeing this, BRAIN_OWNER_ID is not set in the container:\n  //   bash setup-telegram-private.sh --stack ~/brain --status\n  // Apply environment changes by recreating n8n through the Class 4 override.\n  throw new Error('BRAIN_OWNER_ID is not set - refusing everyone, including you');\n}\n\nconst msg = $input.first().json.message;\nconst fromId = String(msg?.from?.id ?? '');\nconst chatId = String(msg?.chat?.id ?? '');\n\nif (fromId !== owner || chatId !== owner) {\n  // Returning an empty array stops the branch: nothing downstream runs and the\n  // stranger gets NO reply at all. Silence is deliberate - an error message would\n  // confirm there is something live behind the username.\n  console.log('refused: from=' + fromId + ' chat=' + chatId +\n              ' username=@' + (msg?.from?.username || '?'));\n  return [];\n}\n\nreturn [{\n  json: {\n    chatId,\n    isVoice: Boolean(msg.voice),\n    // Telegram gives voice notes a file_id; this is what the download node asks for.\n    fileId: msg.voice?.file_id || null,\n    duration: msg.voice?.duration ?? null,\n    text: msg.text || null,\n  },\n}];"
+      },
+      "notes": "THE SECURITY MODEL. Runs before anything is downloaded. Returns an empty array for anyone who is not the owner, which stops the branch silently. Fails CLOSED if BRAIN_OWNER_ID is unset.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-isvoice",
+      "name": "Voice note?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -680,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-voice",
+              "leftValue": "={{ $json.isVoice }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "A stranger gets silence. The owner never does - a text message gets told what to send instead.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-download",
+      "name": "Get the voice note",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -460,
+        -120
+      ],
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "fileId": "={{ $json.fileId }}",
+        "download": true
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "Brain Bot (Telegram)"
+        }
+      },
+      "notes": "Inbound is native - the token stays in the credential. Only the final sendVoice has to go out over raw HTTP, because this node has no sendVoice operation.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-write-ogg",
+      "name": "Save the ogg",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        -120
+      ],
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/tmp/voice-{{ $execution.id }}.ogg",
+        "dataPropertyName": "data",
+        "options": {}
+      },
+      "notes": "{{ $execution.id }} in EVERY temp filename. A fixed name breaks the first time two voice notes arrive close together: the second execution overwrites the first one's audio mid-flight. It does not error - it sends the wrong answer.\n\nIf this fails with an access error, your n8n restricts file paths (N8N_RESTRICT_FILE_ACCESS_TO). Use a path under /home/node/ instead, here and in every ffmpeg command below.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-to-mp3",
+      "name": "ogg to mp3",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        -120
+      ],
+      "parameters": {
+        "command": "=ffmpeg -y -hide_banner -loglevel error -i /tmp/voice-{{ $execution.id }}.ogg -ar 16000 -ac 1 -b:a 48k /tmp/voice-{{ $execution.id }}.mp3"
+      },
+      "notes": "A Telegram voice note is ogg/opus. The transcription path was measured on MP3, not on ogg - the probe built an ogg clip and never sent it. Converting here puts this on the path that actually returned 200 in 1.7s, and ffmpeg is already in the container so it costs nothing.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-read-mp3",
+      "name": "Read the mp3",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        -120
+      ],
+      "parameters": {
+        "operation": "read",
+        "fileSelector": "=/tmp/voice-{{ $execution.id }}.mp3",
+        "options": {}
+      }
+    },
+    {
+      "id": "c4-b64",
+      "name": "To base64",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        -120
+      ],
+      "parameters": {
+        "jsCode": "// n8n binary data may be held on disk rather than in memory, so read it through the\n// helper instead of touching .binary.data.data directly.\nconst buf = await this.helpers.getBinaryDataBuffer(0, 'data');\n\nif (!buf || buf.length === 0) {\n  throw new Error('the mp3 is empty - ffmpeg produced nothing, check its stderr');\n}\n\nreturn [{\n  json: {\n    audio: buf.toString('base64'),\n    mp3Bytes: buf.length,\n    // .first() rather than .item: every execution here handles exactly one Telegram\n    // message, so there is no ambiguity to resolve - and .first() cannot fail on item\n    // pairing the way .item can once the workflow has branches in it.\n    chatId: $('Is this you?').first().json.chatId,\n  },\n}];"
+      }
+    },
+    {
+      "id": "c4-transcribe",
+      "name": "Transcribe",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        -120
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"google/gemini-2.5-flash\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"Transcribe this audio verbatim. Output only the transcript, with no commentary.\"\n        },\n        {\n          \"type\": \"input_audio\",\n          \"input_audio\": {\n            \"data\": \"{{ $json.audio }}\",\n            \"format\": \"mp3\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "OpenRouter"
+        }
+      },
+      "notes": "The SAME OpenRouter key from Class 1. No new credential anywhere in this class.\n\nA 404 here means the model slug was retired, not that the workflow is broken. google/gemini-2.0-flash-001 already went that way.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-transcript",
+      "name": "Read the transcript",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        860,
+        -120
+      ],
+      "parameters": {
+        "jsCode": "const content = $input.first().json?.choices?.[0]?.message?.content;\nconst transcript = String(content ?? '').trim();\n\n// An empty transcript must not be passed on as a question. Downstream it becomes an\n// empty query, which retrieves whatever is nearest to nothing and gets answered\n// confidently. Refuse it here instead.\nconst heard = transcript.length >= 2;\n\nreturn [{\n  json: {\n    transcript,\n    heard,\n    chatId: $('Is this you?').first().json.chatId,\n  },\n}];"
+      }
+    },
+    {
+      "id": "c4-heard",
+      "name": "Did we hear anything?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1080,
+        -120
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-heard",
+              "leftValue": "={{ $json.heard }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "c4-ask",
+      "name": "Ask the brain",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        -220
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:5678/webhook/ask",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"question\": {{ JSON.stringify(String($json.transcript ?? '')) }}\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "notes": "CLASS 3, UNTOUCHED. This node runs inside the n8n container, where localhost:5678 is n8n itself - do not use a LAN address.\n\n/webhook/ask, NOT /webhook-test/ask. The test URL only exists while the Class 3 editor is open and listening, so it works while you are watching and fails the moment you close the tab.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-shape",
+      "name": "Shape the reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        -220
+      ],
+      "parameters": {
+        "jsCode": "const r = $input.first().json;\nconst answered = r.answered === true;\nconst answer = String(r.answer ?? '').trim();\nconst sources = Array.isArray(r.sources) ? r.sources : [];\n\n// Keep these THREE separate on purpose:\n//   speech  - what gets read aloud. Never contains a filename.\n//   text    - what appears in the message bubble, with the source for provenance.\n//   answer  - the raw sentence, kept so a later change does not have to unpick a string.\n//\n// Hearing \"the security deposit is seven thousand seven hundred dollars\" is the point.\n// Hearing \"open paren warehouse dash lease dot em dee close paren\" is not.\nconst text = answered && sources.length\n  ? answer + '\\n(' + sources.join(', ') + ')'\n  : answer;\n\nreturn [{\n  json: {\n    answered,\n    answer,\n    sources,\n    text,\n    // The refusal is passed through UNCHANGED. Class 3 says \"I don't have that in your\n    // documents.\" Do not soften it, do not append \"but I could look it up\". A reply\n    // that apologises its way around the refusal has started guessing.\n    speech: answer,\n    chatId: $('Is this you?').first().json.chatId,\n  },\n}];"
+      }
+    },
+    {
+      "id": "c4-send-text",
+      "name": "Send the text",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1740,
+        -220
+      ],
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "Brain Bot (Telegram)"
+        }
+      },
+      "notes": "Sent BEFORE the voice note on purpose. Seeing the answer written down while you listen is better than either alone, and it is what you screenshot when something is wrong.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-speak",
+      "name": "Speak it",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1960,
+        -220
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openai/gpt-audio-mini\",\n  \"modalities\": [\n    \"text\",\n    \"audio\"\n  ],\n  \"audio\": {\n    \"voice\": \"alloy\",\n    \"format\": \"pcm16\"\n  },\n  \"stream\": true,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify('Read this aloud exactly as written, with no preamble: ' + String($json.speech ?? '')) }}\n    }\n  ]\n}",
+        "options": {
+          "timeout": 120000,
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "OpenRouter"
+        }
+      },
+      "notes": "TWO TRAPS, both 400s whose message is only in the response body:\n  format mp3 + no stream  -> 'Audio output requires stream: true'\n  format mp3 + stream     -> \"does not support 'mp3' when stream=true\"\n  format pcm16 + stream   -> 200\n\nResponse Format must be 'text' or n8n throws on the SSE stream.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-parse",
+      "name": "Reassemble the audio",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2180,
+        -220
+      ],
+      "parameters": {
+        "jsCode": "// Concatenate the base64 FIRST, decode ONCE.\n//\n// Decoding each SSE frame separately and joining the resulting BYTES works by luck with\n// base64 padding, and breaks the first time a frame's length is not a multiple of 3.\n// It does not throw when it breaks. It produces audio that plays as static.\nconst body = $input.first().json.data;\nif (typeof body !== 'string') {\n  throw new Error('Expected raw text, got ' + typeof body +\n                  ' - set the HTTP node Response Format to \"text\"');\n}\n\nconst parts = [];\nlet frames = 0;\nfor (const raw of body.split('\\n')) {\n  const line = raw.trim();\n  if (!line.startsWith('data:')) continue;\n  const payload = line.slice(5).trim();\n  if (payload === '[DONE]') break;\n  try {\n    const a = JSON.parse(payload)?.choices?.[0]?.delta?.audio;\n    if (a?.data) { parts.push(a.data); frames++; }\n  } catch (e) { /* keepalive frame, not JSON - skip it, do not throw */ }\n}\n\nconst pcm = Buffer.from(parts.join(''), 'base64');\nif (pcm.length === 0) {\n  // An error object streams back the same way a success does. Read the raw text.\n  throw new Error('no audio frames recovered from the stream');\n}\n\nreturn [{\n  json: {\n    audioFrames: frames,\n    pcmBytes: pcm.length,\n    seconds: +(pcm.length / 48000).toFixed(2),   // 24 kHz * 2 bytes per sample\n    chatId: $('Is this you?').first().json.chatId,\n  },\n  binary: {\n    data: {\n      data: pcm.toString('base64'),\n      mimeType: 'audio/L16',\n      fileName: 'answer.pcm',\n    },\n  },\n}];"
+      },
+      "notes": "Concatenate the base64 FIRST, decode ONCE. Decoding per frame and joining the bytes works by luck with base64 padding and breaks silently - the file is the right size and plays as static.\n\nReports audioFrames / pcmBytes / seconds. Zero frames means STOP; everything downstream will build a plausible file out of nothing.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-write-pcm",
+      "name": "Save the pcm",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        2400,
+        -220
+      ],
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/tmp/answer-{{ $execution.id }}.pcm",
+        "dataPropertyName": "data",
+        "options": {}
+      }
+    },
+    {
+      "id": "c4-to-ogg",
+      "name": "To a voice note",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        2620,
+        -220
+      ],
+      "parameters": {
+        "command": "=ffmpeg -y -hide_banner -loglevel error -f s16le -ar 24000 -ac 1 -i /tmp/answer-{{ $execution.id }}.pcm -c:a libopus -b:a 32k /tmp/answer-{{ $execution.id }}.ogg"
+      },
+      "notes": "-f s16le -ar 24000 -ac 1 describe the RAW PCM and must come BEFORE -i. Raw PCM has no header saying what it is. Get any of the three wrong and ffmpeg still produces a file - it just sounds fast, slow, or like static.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-read-ogg",
+      "name": "Read the ogg",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        2840,
+        -220
+      ],
+      "parameters": {
+        "operation": "read",
+        "fileSelector": "=/tmp/answer-{{ $execution.id }}.ogg",
+        "options": {}
+      }
+    },
+    {
+      "id": "c4-sendvoice",
+      "name": "sendVoice",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3060,
+        -220
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $env.BRAIN_BOT_TOKEN }}/sendVoice",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $('Is this you?').first().json.chatId }}"
+            },
+            {
+              "name": "voice",
+              "parameterType": "formBinaryData",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "notes": "No credential attached, deliberately. The token comes from $env.BRAIN_BOT_TOKEN.\n\n404 here almost always means that variable is EMPTY in the container, not that the token is wrong - the URL became /bot/sendVoice. Check with: bash setup-telegram-private.sh --stack ~/brain --status",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-cleanup",
+      "name": "Clean up",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        3280,
+        -220
+      ],
+      "parameters": {
+        "command": "=rm -f /tmp/voice-{{ $execution.id }}.* /tmp/answer-{{ $execution.id }}.*"
+      },
+      "notes": "Every execution leaves four files in the container otherwise, and nothing removes them until the container is recreated.",
+      "notesInFlow": true
+    },
+    {
+      "id": "c4-say-voice",
+      "name": "Ask for a voice note",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -460,
+        120
+      ],
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "=Send me a voice note and I'll answer out loud.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "Brain Bot (Telegram)"
+        }
+      }
+    },
+    {
+      "id": "c4-say-deaf",
+      "name": "Could not make that out",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1300,
+        -20
+      ],
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "=I couldn't make that out - try again?",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "Brain Bot (Telegram)"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Is this you?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is this you?": {
+      "main": [
+        [
+          {
+            "node": "Voice note?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the voice note": {
+      "main": [
+        [
+          {
+            "node": "Save the ogg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save the ogg": {
+      "main": [
+        [
+          {
+            "node": "ogg to mp3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ogg to mp3": {
+      "main": [
+        [
+          {
+            "node": "Read the mp3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read the mp3": {
+      "main": [
+        [
+          {
+            "node": "To base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "To base64": {
+      "main": [
+        [
+          {
+            "node": "Transcribe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe": {
+      "main": [
+        [
+          {
+            "node": "Read the transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read the transcript": {
+      "main": [
+        [
+          {
+            "node": "Did we hear anything?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask the brain": {
+      "main": [
+        [
+          {
+            "node": "Shape the reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shape the reply": {
+      "main": [
+        [
+          {
+            "node": "Send the text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send the text": {
+      "main": [
+        [
+          {
+            "node": "Speak it",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Speak it": {
+      "main": [
+        [
+          {
+            "node": "Reassemble the audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reassemble the audio": {
+      "main": [
+        [
+          {
+            "node": "Save the pcm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save the pcm": {
+      "main": [
+        [
+          {
+            "node": "To a voice note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "To a voice note": {
+      "main": [
+        [
+          {
+            "node": "Read the ogg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read the ogg": {
+      "main": [
+        [
+          {
+            "node": "sendVoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sendVoice": {
+      "main": [
+        [
+          {
+            "node": "Clean up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Voice note?": {
+      "main": [
+        [
+          {
+            "node": "Get the voice note",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask for a voice note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Did we hear anything?": {
+      "main": [
+        [
+          {
+            "node": "Ask the brain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Could not make that out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

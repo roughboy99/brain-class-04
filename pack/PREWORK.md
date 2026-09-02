@@ -64,7 +64,7 @@ the blue check mark is on the account.
 
    ```
    Use this token to access the HTTP API:
-   8114247238:AAF...........................
+   123456789:AAF...........................
    ```
 
 **That token is a password.** Anyone who has it controls your bot completely.

@@ -51,8 +51,9 @@ beginners are.
 | [`index.html`](index.html) | **The show notes.** Classes 1–3 recap, the install, the run of the hour, the traps, the verification |
 | [`install.txt`](install.txt) | What the one command fetches — the install prompt as plain text |
 | [`setup-gate.html`](setup-gate.html) | The browser steps plus the off-camera private setup handoff |
-| [`downloads/`](downloads/) | Pre-class pack, slide deck, legacy draft pack and `SHA256SUMS` |
-| [`pack/`](pack/) | The pack unzipped — every file readable here without downloading anything |
+| [`setup-checklist.html`](setup-checklist.html) | The install by hand: 12 tickable steps with every command, including the public HTTPS URL and the n8n credential |
+| [`downloads/`](downloads/) | Pre-class pack, slide deck and `SHA256SUMS` |
+| [`pack/`](pack/) | The pre-class pack unzipped — every text file readable here without downloading anything. Rebuilt from the same manifest as the zip |
 
 Both HTML pages work standalone from `file://`. They make **no network requests at all**
 and reference no external resources, so they work offline and on a locked-down machine.
@@ -90,7 +91,6 @@ the finished fallback and must remain inactive before class.
 voice, second-account silence, failure paths, export and credential scan. Only the exact
 JSON that passes those tests should lose the `UNVERIFIED` label.
 
-The older `class-04-voice-pack-DRAFT.zip` remains in downloads as a historical artifact.
 
 ---
 
@@ -165,10 +165,9 @@ cd downloads && sha256sum -c SHA256SUMS
 
 | File | SHA-256 |
 |---|---|
-| `class-04-voice-PRECLASS.zip` | `f082668be86bb9c03fdc8de7416ea93970d2a2269eca11a5cd6b060ca9c1d2cd` |
-| `class-04-telegram-integration.pptx` | `98dc4f66a9cb7e46d861c6e26a73d490dd32ab9b68f3b746aee25bbdccaa610e` |
-| `class-04-telegram-integration.pdf` | `8179e55343dc6687dd28001a06b5372acac2d18d83bf257d85c7a0d77dc6875a` |
-| `class-04-voice-pack-DRAFT.zip` | `959c0e62cf87ed9b0b96b0bfeb19cd2ca32b0d0d4cc62da96c2773a78a7362dc` |
+| `class-04-voice-PRECLASS.zip` | `970f3b08d3bb758a7c4ea2f8971410059dbbcb1c59338dd92c5d3b4e4e45fd10` |
+| `class-04-telegram-integration.pptx` | `2d48071b2f03aa9cbc0743fdcd859bab564991bb6a78f42239bb7f5f84fee9da` |
+| `class-04-telegram-integration.pdf` | `ac0652098d8dfed1ffb10d386671f67d759c95ed98fe084b9a8521bb6d12292e` |
 
 This pack pins its zip timestamps, so the same sources always produce the same hash. A
 mismatch means the sources moved, not that the clock did.

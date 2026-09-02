@@ -83,7 +83,7 @@ It replies with:
 Done! Congratulations on your new bot...
 
 Use this token to access the HTTP API:
-<a long string that looks like 8114247238:AAF...>
+<a long string that looks like 123456789:AAF...>
 
 Keep your token secure and store it safely.
 ```
